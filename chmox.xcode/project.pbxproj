@@ -170,7 +170,6 @@
 		2A37F4B4FDCFA73011CA2CEA = {
 			children = (
 				2A37F4B5FDCFA73011CA2CEA,
-				44D62F7906D94F7200C6711F,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -761,14 +760,6 @@
 			lastKnownFileType = text.rtf;
 			name = French;
 			path = French.lproj/Credits.rtf;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		44D62F7906D94F7200C6711F = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = French;
-			path = French.lproj/CHMDocument.nib;
 			refType = 4;
 			sourceTree = "<group>";
 		};
