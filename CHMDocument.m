@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import "CHMDocument.h"
@@ -81,6 +81,11 @@
 - (CHMTableOfContents *)tableOfContents
 {
     return [_container tableOfContents];
+}
+
+- (NSString *)uniqueId
+{
+    return [_container uniqueId];
 }
 
 

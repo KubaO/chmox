@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import "WebKit/WebKit.h"
@@ -28,17 +28,23 @@
 
 #pragma mark NSWindowController overrided method
 
+static const NSRect MAX_RECT = { { 0.0, 0.0 }, { 9999.0, 9999.0 } };
+
 - (void)windowDidLoad
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:[[self document] currentLocation]];
     [[_contentsView mainFrame] loadRequest:request];
 
+    [self setWindowFrameAutosaveName:[[self document] uniqueId]];
+    [self setShouldCloseDocument:YES];
+    
     [_contentsView setPolicyDelegate:self];
     [_contentsView setFrameLoadDelegate:self];   
 // [_contentsView setUIDelegate:self];
     
     [_tocView setDataSource:[[self document] tableOfContents]];
     [_tocView setDelegate:self];
+    [_tocView addToolTipRect:MAX_RECT owner:self userData:nil];
 
 // [self setupToolbar];
 
@@ -110,6 +116,24 @@
   modifierFlags:(unsigned int)modifierFlags
 {
     //NSLog( @"mouseDidMoveOverElement: %@", elementInformation );
+}
+
+#pragma mark NSToolTipOwner
+
+- (NSString *)view:(NSView *)view
+  stringForToolTip:(NSToolTipTag)tag
+	     point:(NSPoint)point
+	  userData:(void *)userData
+{
+    if( view == _tocView ) {
+	int row = [_tocView rowAtPoint:point];
+	
+	if( row >= 0 ) {
+	    return [[_tocView itemAtRow:row] name];
+	}
+    }
+    
+    return nil;
 }
 
 #pragma mark NSOutlineView delegate
