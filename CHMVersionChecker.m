@@ -12,7 +12,7 @@
 
 @implementation CHMVersionChecker
 
-static NSString *AUTOMATIC_CHECK_PREF = @"VersionChecker:automaticCheck";
+NSString *AUTOMATIC_CHECK_PREF = @"VersionChecker:automaticCheck";
 static NSString *DAYS_BETWEEN_AUTOMATIC_CHECKS_PREF = @"VersionChecker:daysBetweenAutomaticChecks";
 static NSString *DAYS_BETWEEN_AUTOMATIC_NORMAL_CHECKS_PREF = @"VersionChecker:daysBetweenAutomaticNormalChecks";
 static NSString *DAYS_BETWEEN_AUTOMATIC_ALERT_CHECKS_PREF = @"VersionChecker:daysBetweenAutomaticAlertChecks";
@@ -111,6 +111,7 @@ static NSString *FIRST_TIME_PREF = @"VersionChecker:firstTime";
     [_preferenceButton2 setState:state];
     [_preferenceButton3 setState:state];
     [[NSUserDefaults standardUserDefaults] setBool:(state == NSOnState) forKey:AUTOMATIC_CHECK_PREF];
+    [[NSNotificationCenter defaultCenter] postNotificationName:AUTOMATIC_CHECK_PREF object:sender]; 
 }
 
 #pragma mark NSWindow delegate

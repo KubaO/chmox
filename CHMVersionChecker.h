@@ -8,6 +8,8 @@
 
 #import <AppKit/AppKit.h>
 
+extern NSString *AUTOMATIC_CHECK_PREF; // Key for user defaults.
+
 @class MacPADSocket;
 
 @interface CHMVersionChecker : NSWindowController {
