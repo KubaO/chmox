@@ -1,4 +1,4 @@
-/* $Id: chm_lib.c,v 1.2 2004-06-04 22:40:23 sboisson Exp $ */
+/* $Id: chm_lib.c,v 1.3 2004-10-14 18:27:48 sboisson Exp $ */
 /***************************************************************************
  *             chm_lib.c - CHM archive manipulation routines               *
  *                           -------------------                           *
@@ -58,6 +58,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifdef CHM_DEBUG
+#include <stdio.h>
+#endif
 
 #if __sun || __sgi
 #include <strings.h>
@@ -221,7 +224,6 @@ static int _unmarshal_uchar_array(unsigned char **pData,
     return 1;
 }
 
-/*
 static int _unmarshal_int16(unsigned char **pData,
                             unsigned long *pLenRemain,
                             Int16 *dest)
@@ -245,7 +247,6 @@ static int _unmarshal_uint16(unsigned char **pData,
     *pLenRemain -= 2;
     return 1;
 }
-*/
 
 static int _unmarshal_int32(unsigned char **pData,
                             unsigned long *pLenRemain,
@@ -577,7 +578,7 @@ struct chmLzxcControlData
     UInt32      version;                /*  8        */
     UInt32      resetInterval;          /*  c        */
     UInt32      windowSize;             /* 10        */
-    UInt32      unknown_14;             /* 14        */
+    UInt32      windowsPerReset;        /* 14        */
     UInt32      unknown_18;             /* 18        */
 };
 
@@ -595,7 +596,7 @@ static int _unmarshal_lzxc_control_data(unsigned char **pData,
     _unmarshal_uint32    (pData, pDataLen, &dest->version);
     _unmarshal_uint32    (pData, pDataLen, &dest->resetInterval);
     _unmarshal_uint32    (pData, pDataLen, &dest->windowSize);
-    _unmarshal_uint32    (pData, pDataLen, &dest->unknown_14);
+    _unmarshal_uint32    (pData, pDataLen, &dest->windowsPerReset);
 
     if (*pDataLen >= _CHM_LZXC_V2_LEN)
         _unmarshal_uint32    (pData, pDataLen, &dest->unknown_18);
@@ -606,7 +607,6 @@ static int _unmarshal_lzxc_control_data(unsigned char **pData,
     {
         dest->resetInterval *= 0x8000;
         dest->windowSize *= 0x8000;
-        dest->unknown_14 *= 0x8000;
     }
     if (dest->windowSize == 0  ||  dest->resetInterval == 0)
         return 0;
@@ -658,6 +658,7 @@ struct chmFile
     struct chmLzxcResetTable reset_table;
 
     /* LZX control data */
+    int                 compression_enabled;
     UInt32              window_size;
     UInt32              reset_interval;
     UInt32              reset_blkcount;
@@ -682,7 +683,7 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
                               UInt64 os,
                               Int64 len)
 {
-    Int64 readLen=0; //, oldOs=0;
+    Int64 readLen=0, oldOs=0;
     if (h->fd  ==  CHM_NULL_FD)
         return readLen;
 
@@ -851,29 +852,21 @@ struct chmFile *chm_open(const char *filename)
     if (newHandle->index_root == -1)
         newHandle->index_root = newHandle->index_head;
 
-    /* prefetch most commonly needed unit infos */
+    /* By default, compression is enabled. */
+    newHandle->compression_enabled = 1;
+
+/* Jed, Sun Jun 27: 'span' doesn't seem to be used anywhere?! */
+#if 0
+    /* fetch span */
     if (CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
                                                   _CHMU_SPANINFO,
                                                   &uiSpan)                ||
-        uiSpan.space == CHM_COMPRESSED                                    ||
-        CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
-                                                  _CHMU_RESET_TABLE,
-                                                  &newHandle->rt_unit)    ||
-        newHandle->rt_unit.space == CHM_COMPRESSED                        ||
-        CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
-                                                  _CHMU_CONTENT,
-                                                  &newHandle->cn_unit)    ||
-        newHandle->cn_unit.space == CHM_COMPRESSED                        ||
-        CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
-                                                  _CHMU_LZXC_CONTROLDATA,
-                                                  &uiLzxc)                ||
-        uiLzxc.space == CHM_COMPRESSED)
+        uiSpan.space == CHM_COMPRESSED)
     {
         chm_close(newHandle);
         return NULL;
     }
 
-    /* try to read span */
     /* N.B.: we've already checked that uiSpan is in the uncompressed section,
      *       so this should not require attempting to decompress, which may
      *       rely on having a valid "span"
@@ -887,34 +880,67 @@ struct chmFile *chm_open(const char *filename)
         chm_close(newHandle);
         return NULL;
     }
+#endif
+
+    /* prefetch most commonly needed unit infos */
+    if (CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
+                                                  _CHMU_RESET_TABLE,
+                                                  &newHandle->rt_unit)    ||
+        newHandle->rt_unit.space == CHM_COMPRESSED                        ||
+        CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
+                                                  _CHMU_CONTENT,
+                                                  &newHandle->cn_unit)    ||
+        newHandle->cn_unit.space == CHM_COMPRESSED                        ||
+        CHM_RESOLVE_SUCCESS != chm_resolve_object(newHandle,
+                                                  _CHMU_LZXC_CONTROLDATA,
+                                                  &uiLzxc)                ||
+        uiLzxc.space == CHM_COMPRESSED)
+    {
+        newHandle->compression_enabled = 0;
+    }
 
     /* read reset table info */
-    sremain = _CHM_LZXC_RESETTABLE_V1_LEN;
-    sbufpos = sbuffer;
-    if (chm_retrieve_object(newHandle, &newHandle->rt_unit, sbuffer,
-                            0, sremain) != sremain                        ||
-        !_unmarshal_lzxc_reset_table(&sbufpos, &sremain,
-                                     &newHandle->reset_table))
+    if (newHandle->compression_enabled)
     {
-        chm_close(newHandle);
-        return NULL;
+        sremain = _CHM_LZXC_RESETTABLE_V1_LEN;
+        sbufpos = sbuffer;
+        if (chm_retrieve_object(newHandle, &newHandle->rt_unit, sbuffer,
+                                0, sremain) != sremain                        ||
+            !_unmarshal_lzxc_reset_table(&sbufpos, &sremain,
+                                         &newHandle->reset_table))
+        {
+            newHandle->compression_enabled = 0;
+        }
     }
 
     /* read control data */
-    sremain = (unsigned long)uiLzxc.length;
-    sbufpos = sbuffer;
-    if (chm_retrieve_object(newHandle, &uiLzxc, sbuffer,
-                             0, sremain) != sremain                       ||
-        !_unmarshal_lzxc_control_data(&sbufpos, &sremain,
-                                      &ctlData))
+    if (newHandle->compression_enabled)
     {
-        chm_close(newHandle);
-        return NULL;
+        sremain = (unsigned long)uiLzxc.length;
+        sbufpos = sbuffer;
+        if (chm_retrieve_object(newHandle, &uiLzxc, sbuffer,
+                                0, sremain) != sremain                       ||
+            !_unmarshal_lzxc_control_data(&sbufpos, &sremain,
+                                          &ctlData))
+        {
+            newHandle->compression_enabled = 0;
+        }
+
+        newHandle->window_size = ctlData.windowSize;
+        newHandle->reset_interval = ctlData.resetInterval;
+
+/* Jed, Mon Jun 28: Experimentally, it appears that the reset block count */
+/*       must be multiplied by this formerly unknown ctrl data field in   */
+/*       order to decompress some files.                                  */
+#if 0
+        newHandle->reset_blkcount = newHandle->reset_interval /
+                    (newHandle->window_size / 2);
+#else
+        newHandle->reset_blkcount = newHandle->reset_interval    /
+                                    (newHandle->window_size / 2) *
+                                    ctlData.windowsPerReset;
+#endif
     }
-    newHandle->window_size = ctlData.windowSize;
-    newHandle->reset_interval = ctlData.resetInterval;
-    newHandle->reset_blkcount = newHandle->reset_interval /
-                               (newHandle->window_size / 2);
 
     /* initialize cache */
     chm_set_param(newHandle, CHM_PARAM_MAX_BLOCKS_CACHED,
@@ -1079,14 +1105,12 @@ static int _chm_parse_UTF8(UChar **pEntry, UInt64 count, char *path)
 {
     /* XXX: implement UTF-8 support, including a real mapping onto
      *      ISO-8859-1?  probably there is a library to do this?  As is
-     *      immediately apparent from the below code, I'm only handling files
-     *      in which none of the strings contain UTF-8 multi-byte characters.
+     *      immediately apparent from the below code, I'm presently not doing
+     *      any special handling for files in which none of the strings contain
+     *      UTF-8 multi-byte characters.
      */
     while (count != 0)
     {
-        if (*(*pEntry) > 0x7f)
-            return 0;
-
         *path++ = (char)(*(*pEntry)++);
         --count;
     }
@@ -1363,40 +1387,67 @@ static Int64 _chm_decompress_block(struct chmFile *h,
     UInt32 blockAlign = (UInt32)(block % h->reset_blkcount); /* reset intvl. aln. */
     UInt32 i;                                           /* local loop index  */
 
+    /* let the caching system pull its weight! */
+    if (block - blockAlign <= h->lzx_last_block  &&
+        block              >= h->lzx_last_block)
+        blockAlign = (block - h->lzx_last_block);
+
     /* check if we need previous blocks */
     if (blockAlign != 0)
     {
         /* fetch all required previous blocks since last reset */
-        for (i = h->reset_blkcount - blockAlign; i > 0; i--)
+        for (i = blockAlign; i > 0; i--)
         {
+            UInt32 curBlockIdx = block - i;
 
             /* check if we most recently decompressed the previous block */
-            if (h->lzx_last_block != block-i)
+            if (h->lzx_last_block != curBlockIdx)
             {
-                indexSlot = (int)((block-i) % h->cache_num_blocks);
-                h->cache_block_indices[indexSlot] = block-i;
+                if ((curBlockIdx % h->reset_blkcount) == 0)
+                {
+#ifdef CHM_DEBUG
+                    fprintf(stderr, "***RESET (1)***\n");
+#endif
+                    LZXreset(h->lzx_state);
+                }
+
+                indexSlot = (int)((curBlockIdx) % h->cache_num_blocks);
+                h->cache_block_indices[indexSlot] = curBlockIdx;
                 if (! h->cache_blocks[indexSlot])
                     h->cache_blocks[indexSlot] = (UChar *)malloc(
-                                            (unsigned int)(h->reset_table.block_len));
+                                                                 (unsigned int)(h->reset_table.block_len));
                 lbuffer = h->cache_blocks[indexSlot];
 
                 /* decompress the previous block */
-                LZXreset(h->lzx_state);
-                if (!_chm_get_cmpblock_bounds(h, block-i, &cmpStart, &cmpLen) ||
-                    _chm_fetch_bytes(h, cbuffer, cmpStart, cmpLen) != cmpLen  ||
+#ifdef CHM_DEBUG
+                fprintf(stderr, "Decompressing block #%4d (EXTRA)\n", curBlockIdx);
+#endif
+                if (!_chm_get_cmpblock_bounds(h, curBlockIdx, &cmpStart, &cmpLen) ||
+                    _chm_fetch_bytes(h, cbuffer, cmpStart, cmpLen) != cmpLen      ||
                     LZXdecompress(h->lzx_state, cbuffer, lbuffer, (int)cmpLen,
                                   (int)h->reset_table.block_len) != DECR_OK)
                 {
+#ifdef CHM_DEBUG
+                    fprintf(stderr, "   (DECOMPRESS FAILED!)\n");
+#endif
                     FREEBUF(cbuffer);
                     return (Int64)0;
                 }
-            }
 
-            h->lzx_last_block = (int)(block - i);
+                h->lzx_last_block = (int)curBlockIdx;
+            }
         }
     }
     else
-        LZXreset(h->lzx_state);
+    {
+        if ((block % h->reset_blkcount) == 0)
+        {
+#ifdef CHM_DEBUG
+            fprintf(stderr, "***RESET (2)***\n");
+#endif
+            LZXreset(h->lzx_state);
+        }
+    }
 
     /* allocate slot in cache */
     indexSlot = (int)(block % h->cache_num_blocks);
@@ -1408,11 +1459,17 @@ static Int64 _chm_decompress_block(struct chmFile *h,
     *ubuffer = lbuffer;
 
     /* decompress the block we actually want */
+#ifdef CHM_DEBUG
+    fprintf(stderr, "Decompressing block #%4d (REAL )\n", block);
+#endif
     if (! _chm_get_cmpblock_bounds(h, block, &cmpStart, &cmpLen)          ||
         _chm_fetch_bytes(h, cbuffer, cmpStart, cmpLen) != cmpLen          ||
         LZXdecompress(h->lzx_state, cbuffer, lbuffer, (int)cmpLen,
                       (int)h->reset_table.block_len) != DECR_OK)
     {
+#ifdef CHM_DEBUG
+        fprintf(stderr, "   (DECOMPRESS FAILED!)\n");
+#endif
         FREEBUF(cbuffer);
         return (Int64)0;
     }
@@ -1511,6 +1568,11 @@ LONGINT64 chm_retrieve_object(struct chmFile *h,
     else /* ui->space == CHM_COMPRESSED */
     {
         Int64 swath=0, total=0;
+
+        /* if compression is not enabled for this file... */
+        if (! h->compression_enabled)
+            return total;
+
         do {
 
             /* swill another mouthful */
