@@ -5,21 +5,11 @@
 	};
 	objectVersion = 39;
 	objects = {
-		089C165FFE840EACC02AAC07 = {
-			children = (
-				089C1660FE840EACC02AAC07,
-			);
-			isa = PBXVariantGroup;
-			name = InfoPlist.strings;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		089C1660FE840EACC02AAC07 = {
 			fileEncoding = 10;
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.strings;
-			name = English;
-			path = English.lproj/InfoPlist.strings;
+			path = InfoPlist.strings;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -170,6 +160,7 @@
 		2A37F4B4FDCFA73011CA2CEA = {
 			children = (
 				2A37F4B5FDCFA73011CA2CEA,
+				445DEAF707B42A4A0008D692,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -188,6 +179,7 @@
 		2A37F4B6FDCFA73011CA2CEA = {
 			children = (
 				2A37F4B7FDCFA73011CA2CEA,
+				445DEAF907B42BAE0008D692,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -205,6 +197,8 @@
 		};
 		2A37F4B8FDCFA73011CA2CEA = {
 			children = (
+				445DEACC07B4086C0008D692,
+				443EA40607B2DF6C00C46016,
 				44949839073D56ED00D8BC20,
 				44949779073D406800D8BC20,
 				44DA07230694985300777FAE,
@@ -221,7 +215,7 @@
 				2A37F4B4FDCFA73011CA2CEA,
 				44B501C806A58D3300CE0A8E,
 				8D15AC360486D014006FF6A4,
-				089C165FFE840EACC02AAC07,
+				089C1660FE840EACC02AAC07,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -435,6 +429,91 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		443EA40607B2DF6C00C46016 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			path = application.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443EA40707B2DF6C00C46016 = {
+			fileRef = 443EA40607B2DF6C00C46016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		445DEAC507B408380008D692 = {
+			fileRef = 089C1660FE840EACC02AAC07;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		445DEACA07B4085C0008D692 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = English;
+			path = English.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEACC07B4086C0008D692 = {
+			children = (
+				445DEACA07B4085C0008D692,
+				445DEAD907B409900008D692,
+				445DEAEB07B40A9F0008D692,
+			);
+			isa = PBXVariantGroup;
+			name = Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEACD07B4086C0008D692 = {
+			fileRef = 445DEACC07B4086C0008D692;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		445DEAD907B409900008D692 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = French;
+			path = French.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEAEB07B40A9F0008D692 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = German;
+			path = German.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEAF307B427460008D692 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = German;
+			path = German.lproj/VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEAF707B42A4A0008D692 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = German;
+			path = German.lproj/CHMDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		445DEAF907B42BAE0008D692 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = German;
+			path = German.lproj/MainMenu.nib;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		448AF5A0064AA5E100FA37BD = {
 			fileEncoding = 4;
@@ -720,16 +799,11 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		44B501B906A58A7D00CE0A8E = {
-			fileRef = 44B501B806A58A7D00CE0A8E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		44B501C806A58D3300CE0A8E = {
 			children = (
 				44B501B606A5885E00CE0A8E,
 				44A67DE00742A04300D4714F,
+				445DEAF307B427460008D692,
 			);
 			isa = PBXVariantGroup;
 			name = VersionChecker.nib;
@@ -961,7 +1035,7 @@
 				8D15AC2C0486D014006FF6A4,
 				8D15AC2D0486D014006FF6A4,
 				8D15AC2E0486D014006FF6A4,
-				8D15AC2F0486D014006FF6A4,
+				445DEAC507B408380008D692,
 				44B7AED20675301E00B51920,
 				443011B7067E54140054A7C5,
 				443011B8067E54140054A7C5,
@@ -969,8 +1043,9 @@
 				443011D3067E65980054A7C5,
 				443011D4067E65980054A7C5,
 				44B501C906A58D3300CE0A8E,
-				44B501B906A58A7D00CE0A8E,
 				4494977A073D406800D8BC20,
+				443EA40707B2DF6C00C46016,
+				445DEACD07B4086C0008D692,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -989,12 +1064,6 @@
 		};
 		8D15AC2E0486D014006FF6A4 = {
 			fileRef = 2A37F4B4FDCFA73011CA2CEA;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8D15AC2F0486D014006FF6A4 = {
-			fileRef = 089C165FFE840EACC02AAC07;
 			isa = PBXBuildFile;
 			settings = {
 			};

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 
 #import "WebKit/WebKit.h"
@@ -313,21 +313,21 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
     NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier];
     
     if ( [itemIdentifier isEqualToString:DRAWER_TOGGLE_TOOL_ID] ) {
-        [item setLabel:@"Drawer"];
+        [item setLabel:NSLocalizedString( DRAWER_TOGGLE_TOOL_ID, nil )];
         [item setPaletteLabel:[item label]];
         [item setImage:[NSImage imageNamed:@"toolbar-drawer"]];
         [item setTarget:self];
         [item setAction:@selector(toggleDrawer:)];
     }
     else if ( [itemIdentifier isEqualToString:SMALLER_TEXT_TOOL_ID] ) {
-        [item setLabel:@"Smaller"];
+        [item setLabel:NSLocalizedString( SMALLER_TEXT_TOOL_ID, nil )];
         [item setPaletteLabel:[item label]];
         [item setImage:[NSImage imageNamed:@"toolbar-smaller"]];
         [item setTarget:self];
         [item setAction:@selector(makeTextSmaller:)];
     }
     else if ( [itemIdentifier isEqualToString:BIGGER_TEXT_TOOL_ID] ) {
-        [item setLabel:@"Bigger"];
+        [item setLabel:NSLocalizedString( BIGGER_TEXT_TOOL_ID, nil )];
         [item setPaletteLabel:[item label]];
         [item setImage:[NSImage imageNamed:@"toolbar-bigger"]];
         [item setTarget:self];
