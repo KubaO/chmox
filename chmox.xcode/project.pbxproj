@@ -201,12 +201,12 @@
 		};
 		2A37F4B8FDCFA73011CA2CEA = {
 			children = (
+				443011D1067E65980054A7C5,
+				443011D2067E65980054A7C5,
 				443011B4067E54140054A7C5,
 				443011B5067E54140054A7C5,
 				443011B6067E54140054A7C5,
 				44B7AED10675301E00B51920,
-				448AF677064AF92800FA37BD,
-				448AF679064AF92800FA37BD,
 				2A37F4B9FDCFA73011CA2CEA,
 				2A37F4B6FDCFA73011CA2CEA,
 				2A37F4B4FDCFA73011CA2CEA,
@@ -401,6 +401,32 @@
 			settings = {
 			};
 		};
+		443011D1067E65980054A7C5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "segment-back.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011D2067E65980054A7C5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "segment-forward.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011D3067E65980054A7C5 = {
+			fileRef = 443011D1067E65980054A7C5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		443011D4067E65980054A7C5 = {
+			fileRef = 443011D2067E65980054A7C5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		448AF5A0064AA5E100FA37BD = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -453,32 +479,6 @@
 		};
 		448AF5AD064AE52F00FA37BD = {
 			fileRef = 448AF5AB064AE52F00FA37BD;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		448AF677064AF92800FA37BD = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.tiff;
-			path = BackAdorn.tif;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		448AF679064AF92800FA37BD = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.tiff;
-			path = ForwardAdorn.tif;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		448AF67A064AF92800FA37BD = {
-			fileRef = 448AF677064AF92800FA37BD;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		448AF67C064AF92900FA37BD = {
-			fileRef = 448AF679064AF92800FA37BD;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -748,12 +748,12 @@
 				8D15AC2D0486D014006FF6A4,
 				8D15AC2E0486D014006FF6A4,
 				8D15AC2F0486D014006FF6A4,
-				448AF67A064AF92800FA37BD,
-				448AF67C064AF92900FA37BD,
 				44B7AED20675301E00B51920,
 				443011B7067E54140054A7C5,
 				443011B8067E54140054A7C5,
 				443011B9067E54140054A7C5,
+				443011D3067E65980054A7C5,
+				443011D4067E65980054A7C5,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
