@@ -649,7 +649,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "-I/usr/include/libxml2";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lxml2 -lcrypto";
 				PRODUCT_NAME = Chmox;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
