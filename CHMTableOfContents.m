@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import "CHMTableOfContents.h"
@@ -115,6 +115,7 @@ static htmlSAXHandler saxHandler = {
 - (void) dealloc
 {
     [_rootTopics release];
+    [super dealloc];
 }
 
 #pragma mark Mutators

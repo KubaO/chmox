@@ -63,6 +63,7 @@ static NSString *FIRST_TIME_PREF = @"VersionChecker:firstTime";
 
 -(void) dealloc {
     [_macPAD release];
+    [super dealloc];
 }
 
 #pragma mark Activation

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #import "CHMDocument.h"
@@ -46,6 +46,8 @@
 	[_tableOfContents release];
 	[_container release];
     }
+    
+    [super dealloc];
 }
 
 #pragma mark NSDocument
@@ -54,6 +56,7 @@
 {
     _windowController = [[CHMWindowController alloc] initWithWindowNibName:@"CHMDocument"];
     [self addWindowController:_windowController];
+    [_windowController release];
 }
 
 

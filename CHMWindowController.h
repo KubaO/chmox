@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import <Cocoa/Cocoa.h>
@@ -33,19 +33,20 @@
 }
 
 - (void)setupToolbar;
+- (void)updateToolTipRects;
 
 - (IBAction)toggleDrawer:(id)sender;
-- (IBAction)displayTopic:(id)sender;
-/*
-- (IBAction)goBack:(id)sender;
-- (IBAction)goForward:(id)sender;
+- (IBAction)changeTopicWithSelectedRow:(id)sender;
+- (IBAction)changeTopicToPreviousInHistory:(id)sender;
+- (IBAction)changeTopicToNextInHistory:(id)sender;
 - (IBAction)makeTextSmaller:(id)sender;
-- (IBAction)makeTextLarger:(id)sender;
-*/
+- (IBAction)makeTextBigger:(id)sender;
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar;
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar;
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag;
+
+- (BOOL)validateMenuItem:(NSMenuItem*)anItem;
 
 
 @end

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #include <openssl/sha.h>
@@ -58,31 +58,18 @@
 
 - (void) dealloc
 {
+	NSLog(@"deallocating %@",self);
     [_path release];
 
     if( _handle ) {
         chm_close( _handle );
     }
 
-    if( _uniqueId ) {
 	[_uniqueId release];
-    }
-    
-    if( _title ) {
 	[_title release];
-    }
-    
-    if( _homePath ) {
 	[_homePath release];
-    }    
-
-    if( _tocPath ) {
 	[_tocPath release];
-    }    
-
-    if( _indexPath ) {
 	[_indexPath release];
-    }    
 }
 
 
@@ -157,7 +144,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
     
     struct chmUnitInfo info;
     if( chm_resolve_object( _handle, [path UTF8String], &info ) != CHM_RESOLVE_SUCCESS ) {
-	NSLog( @"Unable to find %@", path );
+		NSLog( @"Unable to find %@", path );
         return nil;
     }
     
@@ -300,21 +287,10 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
     _uniqueId = [[NSString alloc] initWithFormat:@"%x%x%x%x%x", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4]];
     NSLog( @"UniqueId=%@", _uniqueId );
 
-    if( _title ) {
 	[_title retain];
-    }
-
-    if( _homePath ) {
 	[_homePath retain];
-    }
-    
-    if( _tocPath ) {
 	[_tocPath retain];
-    }
-    
-    if( _indexPath ) {
 	[_indexPath retain];
-    }
     
     return YES;
 }

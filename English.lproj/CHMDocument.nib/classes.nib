@@ -2,7 +2,14 @@
     IBClasses = (
         {CLASS = CHMDocument; LANGUAGE = ObjC; SUPERCLASS = NSDocument; }, 
         {
-            ACTIONS = {displayTopic = id; }; 
+            ACTIONS = {
+                changeTopicToNextInHistory = id; 
+                changeTopicToPreviousInHistory = id; 
+                changeTopicWithSelectedRow = id; 
+                makeTextBigger = id; 
+                makeTextSmaller = id; 
+                toggleDrawer = id; 
+            }; 
             CLASS = CHMWindowController; 
             LANGUAGE = ObjC; 
             OUTLETS = {

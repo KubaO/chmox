@@ -8,12 +8,14 @@
 
 #import "CHMApplication.h"
 #import "CHMVersionChecker.h"
+#import "CHMURLProtocol.h"
 
 
 @implementation CHMApplication
 
 -(void) dealloc {
     [_versionChecker release];
+    [super dealloc];
 }
 
 -(void) awakeFromNib {
@@ -21,6 +23,7 @@
 
 #pragma mark Startup and Shutdown
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
+    [NSURLProtocol registerClass:[CHMURLProtocol class]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
@@ -29,6 +32,7 @@
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
+    [NSURLProtocol unregisterClass:[CHMURLProtocol class]];
 }
 
 #pragma mark Menu bar actions

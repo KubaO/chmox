@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import "CHMTopic.h"
@@ -55,6 +55,8 @@
     if( _subTopics ) {
 	[_subTopics release];
     }
+
+    [super dealloc];
 }
 
 
@@ -108,7 +110,7 @@
 - (void)addObject:(CHMTopic *)topic
 {
     if( !_subTopics ) {
-	_subTopics = [[NSMutableArray alloc] init];
+		_subTopics = [[NSMutableArray alloc] init];
     }
     
     [_subTopics addObject:topic];
@@ -117,7 +119,7 @@
 - (void)insertObject:(CHMTopic *)topic inSubTopicsAtIndex:(unsigned int)index
 {
     if( !_subTopics ) {
-	_subTopics = [[NSMutableArray alloc] init];
+		_subTopics = [[NSMutableArray alloc] init];
     }
     
     [_subTopics insertObject:topic atIndex:index];

@@ -16,13 +16,15 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 
 #import "WebKit/WebKit.h"
 #import "CHMWindowController.h"
 #import "CHMDocument.h"
 #import "CHMTopic.h"
+#import "CHMURLProtocol.h"
+
 
 @implementation CHMWindowController
 
@@ -37,17 +39,7 @@ static NSString *SMALLER_TEXT_TOOL_ID = @"chmox.smallerText";
 static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 
 
-- (void)updateToolTipRects
-{
-    [_tocView removeAllToolTips];
-    NSRange range = [_tocView rowsInRect:[_tocView visibleRect]];
-    
-    for( int index = range.location; index < NSMaxRange( range ); ++index ) {
-	[_tocView addToolTipRect:[_tocView rectOfRow:index] owner:self userData:NULL];
-    }
-}
-
-#pragma mark NSWindowController overrided method
+#pragma mark NSWindowController overridden method
 
 - (void)windowDidLoad
 {
@@ -56,17 +48,13 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 
     [self setWindowFrameAutosaveName:[[self document] uniqueId]];
     [self setShouldCloseDocument:YES];
-    
-    [_contentsView setPolicyDelegate:self];
-    [_contentsView setFrameLoadDelegate:self]; 
-// [_contentsView setUIDelegate:self];
-    
+       
     [_tocView setDataSource:[[self document] tableOfContents]];
-    [_tocView setDelegate:self];
+    [_tocView setAutoresizesOutlineColumn:NO];
+    
     [self updateToolTipRects];
-
     [self setupToolbar];
-
+    
     int tabIndex;
     
     // Remove Search tab
@@ -86,20 +74,10 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 
 - (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
 {
+    // TODO: user preferences to display filename or doc title
     return [[self document] title];
 }
 
-#pragma mark Toolbar related methods
-
-- (void)setupToolbar
-{
-    NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"mainToolbar"];
-    [toolbar autorelease];
-    [toolbar setDelegate:self];
-    [toolbar setAllowsUserCustomization:YES];
-    [toolbar setAutosavesConfiguration:YES];
-    [[self window ] setToolbar:toolbar];
-}
 
 #pragma mark WebPolicyDelegate
 
@@ -108,35 +86,50 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 	request:(NSURLRequest *)request
 	  frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-    NSLog( @"decidePolicyForNavigationAction: %@ %@", request, actionInformation );
-    
-    if( [[[request URL] scheme] isEqualToString:@"chmox-internal"] ) {
+    if( [CHMURLProtocol canHandleURL:[request URL]] ) {
 	[listener use];
+    } else {
+	NSLog( @"Opening external URL %@", [request URL]);
+	[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+	[listener ignore];
     }
-
-    [listener ignore];
-    [[NSWorkspace sharedWorkspace] openURL:[request URL]];
 }
 
-
-#pragma mark WebFrameLoadDelegate
-
-- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+// Open external URLs in new window in external viewer
+- (void)webView:(WebView *)sender 
+	decidePolicyForNewWindowAction:(NSDictionary *)actionInformation 
+	request:(NSURLRequest *)request 
+	newFrameName:(NSString *)frameName 
+	decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-    // Only report feedback for the main frame.
-    if (frame == [sender mainFrame]){
-//	[backButton setEnabled:[sender canGoBack]];
-//	[forwardButton setEnabled:[sender canGoForward]];
+    NSLog( @"WebPolicyDelegate: decidePolicyForNewWindowAction called %@", [request URL]);
+
+    if( [CHMURLProtocol canHandleURL:[request URL]] ) {
+	// Need testing
+	[listener use];
+    } else {
+	NSLog( @"Opening external URL %@", [request URL]);
+	[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+	[listener ignore];
     }
 }
-
-
+	
+	
 #pragma mark WebUIDelegate 
 
-- (NSArray *)webView:(WebView *) sendercontextMenuItemsForElement:(NSDictionary *)element
+- (NSArray *)webView:(WebView *)sender 
+    contextMenuItemsForElement:(NSDictionary *)element
     defaultMenuItems:(NSArray *)defaultMenuItems
 {
-    NSLog( @"mouseDidMoveOverElement: %@", element );
+    NSLog( @"contextMenuItemsForElement: %@", element );
+
+    NSURL *link = [element objectForKey:WebElementLinkURLKey];
+    
+    if( link && [CHMURLProtocol canHandleURL:link] ) {
+	// No context menu for internal links
+	return nil;
+    }
+    
     return defaultMenuItems;
 }
 
@@ -164,21 +157,80 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
     return nil;
 }
 
+- (void)updateToolTipRects
+{
+    [_tocView removeAllToolTips];
+    NSRange range = [_tocView rowsInRect:[_tocView visibleRect]];
+    
+    for( int i = range.location; i < NSMaxRange( range ); ++i ) {
+	[_tocView addToolTipRect:[_tocView rectOfRow:i] owner:self userData:NULL];
+    }
+}
+
 #pragma mark NSOutlineView delegate
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-    // Change icon
+    // TODO: Change icon
 }
+
+#pragma mark Menu Validation
+
+- (BOOL)validateMenuItem:(NSMenuItem*)anItem {
+    if( [anItem action] == @selector( changeTopicToPreviousInHistory: ) ) {
+	return [_contentsView canGoBack];
+    }
+    else if( [anItem action] == @selector( changeTopicToNextInHistory: ) ) {
+	return [_contentsView canGoForward];
+    }
+    else if( [anItem action] == @selector( makeTextSmaller: ) ) {
+	return [_contentsView canMakeTextSmaller];
+    }
+    else if( [anItem action] == @selector( makeTextBigger: ) ) {
+	return [_contentsView canMakeTextLarger];
+    }
+    
+    return YES;
+}
+
+#pragma mark NSResponder
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    if( [theEvent modifierFlags] & NSCommandKeyMask ) {
+	NSString *keyString = [theEvent charactersIgnoringModifiers];
+//	NSLog( @"CHMWindowController:keyDown %@", [keyString description] );
+	
+	switch( [keyString characterAtIndex:0] ) {
+	    case NSLeftArrowFunctionKey:
+                if( [_contentsView canGoBack] ) {
+                    [_contentsView goBack];
+                    return;
+                }
+                break;
+		
+	    case NSRightArrowFunctionKey:
+                if( [_contentsView canGoForward] ) {
+                    [_contentsView goForward];
+                    return;
+                }
+                break;
+	}
+    }
+
+    [super keyDown:theEvent];
+}
+
 
 #pragma mark Actions
 
 - (IBAction)toggleDrawer:(id)sender
 {
+    NSLog( @"First responder: %@", [[self window] firstResponder] );
     [_drawer toggle:self];
 }
 
-- (IBAction)displayTopic:(id)sender
+- (IBAction)changeTopicWithSelectedRow:(id)sender
 {
     int selectedRow = [_tocView selectedRow];
     
@@ -190,20 +242,52 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 	    [[_contentsView mainFrame] loadRequest:[NSURLRequest requestWithURL:location]];
 	}
     }
+    
+    [[self window] makeFirstResponder:self];
 }
 
+- (IBAction)makeTextBigger:(id)sender
+{
+	[ _contentsView makeTextLarger:sender ];
+}
 
-#pragma mark NSToolbar
+- (IBAction)makeTextSmaller:(id)sender
+{
+	[ _contentsView makeTextSmaller:sender ];
+}
+
+- (IBAction)changeTopicToPreviousInHistory:(id)sender
+{
+	[ _contentsView goBack ];
+}
+
+- (IBAction)changeTopicToNextInHistory:(id)sender
+{
+	[ _contentsView goForward ];
+}
+
+#pragma mark Toolbar related methods
+
+- (void)setupToolbar
+{
+    NSToolbar *toolbar = [[[NSToolbar alloc] initWithIdentifier:@"mainToolbar"] autorelease];
+
+    [toolbar setDelegate:self];
+    [toolbar setAllowsUserCustomization:YES];
+    [toolbar setAutosavesConfiguration:YES];
+    [[self window ] setToolbar:toolbar];
+}
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:
         DRAWER_TOGGLE_TOOL_ID,
-	SMALLER_TEXT_TOOL_ID,
-	BIGGER_TEXT_TOOL_ID,
+        SMALLER_TEXT_TOOL_ID,
+        BIGGER_TEXT_TOOL_ID,
         NSToolbarSeparatorItemIdentifier,
         NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier,
+        NSToolbarCustomizeToolbarItemIdentifier,
 //        NSToolbarPrintItemIdentifier,
         nil
         ];
@@ -212,10 +296,10 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:
-        DRAWER_TOGGLE_TOOL_ID,
-	SMALLER_TEXT_TOOL_ID,
-	BIGGER_TEXT_TOOL_ID,
+        SMALLER_TEXT_TOOL_ID,
+        BIGGER_TEXT_TOOL_ID,
         NSToolbarFlexibleSpaceItemIdentifier,
+        DRAWER_TOGGLE_TOOL_ID,
 //        NSToolbarPrintItemIdentifier,
         nil
         ];
@@ -239,15 +323,15 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
         [item setLabel:@"Smaller"];
         [item setPaletteLabel:[item label]];
         [item setImage:[NSImage imageNamed:@"toolbar-smaller"]];
-        [item setTarget:_contentsView];
+        [item setTarget:self];
         [item setAction:@selector(makeTextSmaller:)];
     }
     else if ( [itemIdentifier isEqualToString:BIGGER_TEXT_TOOL_ID] ) {
         [item setLabel:@"Bigger"];
         [item setPaletteLabel:[item label]];
         [item setImage:[NSImage imageNamed:@"toolbar-bigger"]];
-        [item setTarget:_contentsView];
-        [item setAction:@selector(makeTextLarger:)];
+        [item setTarget:self];
+        [item setAction:@selector(makeTextBigger:)];
     }
     
     return [item autorelease];

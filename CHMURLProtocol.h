@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import <Foundation/Foundation.h>
@@ -27,9 +27,10 @@
 }
 
 + (void)registerContainer:(CHMContainer *)container;
-+ (CHMContainer *)containerForUniqueId:(NSString *)uniqueId;
 + (void)unregisterContainer:(CHMContainer *)container;
 
++ (BOOL)canHandleURL:(NSURL *)anURL;
++ (CHMContainer *)containerForUniqueId:(NSString *)uniqueId;
 + (NSURL *)URLWithPath:(NSString *)path inContainer:(CHMContainer *)container;
 
 @end

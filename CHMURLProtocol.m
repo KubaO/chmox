@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import "CHMURLProtocol.h"
@@ -47,7 +47,7 @@ static NSMutableDictionary *_baseURLs = nil;
 	_baseURLs = [[NSMutableDictionary alloc] init];
     }
     
-    NSURL *baseURL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"chmox-internal://%@/", key]];
+    NSURL *baseURL = [NSURL URLWithString:[NSString stringWithFormat:@"chmox-internal://%@/", key]];
     [_containers setObject:container forKey:key];
     [_baseURLs setObject:baseURL forKey:key];
 }
@@ -68,16 +68,33 @@ static NSMutableDictionary *_baseURLs = nil;
 + (NSURL *)URLWithPath:(NSString *)path inContainer:(CHMContainer *)container
 {
     NSURL *baseURL = [_baseURLs objectForKey:[container uniqueId]];
-    return baseURL? [NSURL URLWithString:path relativeToURL:baseURL] : nil; 
+	NSURL *URL = [NSURL URLWithString:path relativeToURL:baseURL];
+	if (baseURL && URL==nil) {
+		// Something is wrong, perhaps path is not well-formed. Try percent-
+		// escaping characters. It's not clear what encoding should be used,
+		// but for now let's just use Latin1.
+		CFStringRef str = CFURLCreateStringByAddingPercentEscapes(
+			nil,				// allocator
+			(CFStringRef)path,	// <#CFStringRef originalString#>
+			(CFStringRef)@"%#", // <#CFStringRef charactersToLeaveUnescaped#>
+			nil,				// <#CFStringRef legalURLCharactersToBeEscaped#>,
+			kCFStringEncodingWindowsLatin1 );	//<#CFStringEncoding encoding#>
+		URL = [NSURL URLWithString:(NSString*)str relativeToURL:baseURL];
+	}
+	return URL;
+}
+
++ (BOOL)canHandleURL:(NSURL *)anURL 
+{
+    return [[anURL scheme] isEqualToString:@"chmox-internal"];
 }
 
 #pragma mark NSURLProtocol overriding
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
-    if( [[[request URL] scheme] isEqualToString:@"chmox-internal"] ) {
+    if( [self canHandleURL:[request URL]] ) {
 	return YES;
-    }
-    else {
+    } else {
 	NSLog( @"CHMURLProtocol cannot handle %@", request );
 	return NO;
     }
@@ -133,6 +150,8 @@ static NSMutableDictionary *_baseURLs = nil;
     
     [[self client] URLProtocol:self didLoadData:data];
     [[self client] URLProtocolDidFinishLoading:self];
+
+	[response release];
 }
 
 
