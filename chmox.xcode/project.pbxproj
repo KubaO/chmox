@@ -95,6 +95,8 @@
 				French,
 				German,
 				Italian,
+				Persian,
+				Farsi,
 			);
 			mainGroup = 2A37F4AAFDCFA73011CA2CEA;
 			projectDirPath = "";
@@ -170,6 +172,7 @@
 				445DEAF707B42A4A0008D692,
 				4410438D07B4F83D00B3D4B9,
 				44C8E71707B8267200F5DADD,
+				4492A06807BF9896007B237D,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -191,6 +194,7 @@
 				445DEAF907B42BAE0008D692,
 				4410436C07B4F11900B3D4B9,
 				44C8E70E07B825EC00F5DADD,
+				4492A06707BF988B007B237D,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -238,6 +242,7 @@
 				2A37F4BAFDCFA73011CA2CEA,
 				44D62F6906D94D5500C6711F,
 				44916E9C07B97CED0095F0CE,
+				4492A06607BF9876007B237D,
 			);
 			isa = PBXVariantGroup;
 			name = Credits.rtf;
@@ -491,6 +496,7 @@
 				445DEAD907B409900008D692,
 				445DEAEB07B40A9F0008D692,
 				44B8E1B807B8245D002BF574,
+				4492A06A07BF98B1007B237D,
 			);
 			isa = PBXVariantGroup;
 			name = Localizable.strings;
@@ -724,6 +730,46 @@
 			settings = {
 			};
 		};
+		4492A06607BF9876007B237D = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
+			name = Farsi;
+			path = Farsi.lproj/Credits.rtf;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4492A06707BF988B007B237D = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Farsi;
+			path = Farsi.lproj/MainMenu.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4492A06807BF9896007B237D = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Farsi;
+			path = Farsi.lproj/CHMDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4492A06907BF989E007B237D = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Farsi;
+			path = Farsi.lproj/VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4492A06A07BF98B1007B237D = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = Farsi;
+			path = Farsi.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		44949779073D406800D8BC20 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -834,6 +880,7 @@
 				44A67DE00742A04300D4714F,
 				445DEAF307B427460008D692,
 				44C8E71807B8267F00F5DADD,
+				4492A06907BF989E007B237D,
 			);
 			isa = PBXVariantGroup;
 			name = VersionChecker.nib;
@@ -985,11 +1032,13 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
+				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "-DDEBUG_MODE";
 				ZERO_LINK = YES;
 			};
 			isa = PBXBuildStyle;
@@ -1001,9 +1050,9 @@
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				INSTALL_PATH = $HOME/Applications;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				PRODUCT_NAME = Chmox;
 				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
@@ -1049,12 +1098,11 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				OTHER_CFLAGS = "-I/usr/include/libxml2";
 				OTHER_LDFLAGS = "-lxml2 -lcrypto";
 				PRODUCT_NAME = Chmox;
 				SECTORDER_FLAGS = "";
@@ -1062,7 +1110,6 @@
 				UNSTRIPPED_PRODUCT = NO;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
 			};
 			dependencies = (
 			);
