@@ -44,8 +44,7 @@
 			sourceTree = "<group>";
 		};
 		1058C7A7FEA54F5311CA2CBB = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
@@ -124,6 +123,10 @@
 		};
 		2A37F4ABFDCFA73011CA2CEA = {
 			children = (
+				44923A78072C57E90070AA26,
+				44923A79072C57E90070AA26,
+				44B501B006A587BA00CE0A8E,
+				44B501B106A587BA00CE0A8E,
 				448AF5A0064AA5E100FA37BD,
 				448AF5A1064AA5E100FA37BD,
 				448AF5AA064AE52F00FA37BD,
@@ -145,6 +148,7 @@
 		};
 		2A37F4AFFDCFA73011CA2CEA = {
 			children = (
+				4494984B073D5A1700D8BC20,
 				44D7FFF0065A9C7B00D2B23E,
 				448AF6EF064AFCD900FA37BD,
 				2A37F4B0FDCFA73011CA2CEA,
@@ -166,6 +170,7 @@
 		2A37F4B4FDCFA73011CA2CEA = {
 			children = (
 				2A37F4B5FDCFA73011CA2CEA,
+				44D62F7906D94F7200C6711F,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -201,16 +206,21 @@
 		};
 		2A37F4B8FDCFA73011CA2CEA = {
 			children = (
+				44949839073D56ED00D8BC20,
+				44949779073D406800D8BC20,
+				44DA07230694985300777FAE,
 				448CC7E5068A2ED200F9B0DB,
 				443011D1067E65980054A7C5,
 				443011D2067E65980054A7C5,
 				443011B4067E54140054A7C5,
 				443011B5067E54140054A7C5,
 				443011B6067E54140054A7C5,
+				44B501B806A58A7D00CE0A8E,
 				44B7AED10675301E00B51920,
 				2A37F4B9FDCFA73011CA2CEA,
 				2A37F4B6FDCFA73011CA2CEA,
 				2A37F4B4FDCFA73011CA2CEA,
+				44B501C806A58D3300CE0A8E,
 				8D15AC360486D014006FF6A4,
 				089C165FFE840EACC02AAC07,
 			);
@@ -223,6 +233,7 @@
 		2A37F4B9FDCFA73011CA2CEA = {
 			children = (
 				2A37F4BAFDCFA73011CA2CEA,
+				44D62F6906D94D5500C6711F,
 			);
 			isa = PBXVariantGroup;
 			name = Credits.rtf;
@@ -250,8 +261,7 @@
 			sourceTree = "<group>";
 		};
 		2A37F4C4FDCFA73011CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
@@ -259,8 +269,7 @@
 			sourceTree = "<absolute>";
 		};
 		2A37F4C5FDCFA73011CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -573,6 +582,167 @@
 			shellPath = /bin/sh;
 			shellScript = "# Create DMG for delivery\n\nDELIVERABLE_SIZE=1 # megabytes\nDELIVERABLE_INTERMEDIATE_FILENAME=\"$TEMP_FILES_DIR/$PRODUCT_NAME.dmg\"\nDELIVERABLE_VERSION=`defaults read $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME/Contents/Info CFBundleVersion`\nDELIVERABLE_FILENAME=\"$HOME/Desktop/$PRODUCT_NAME-$DELIVERABLE_VERSION.dmg\"\nDELIVERABLE_VOLUME_NAME=\"$PRODUCT_NAME $DELIVERABLE_VERSION\"\n\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\nhdiutil create \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -ov -megabytes $DELIVERABLE_SIZE -fs HFS+ -volname \"$DELIVERABLE_VOLUME_NAME\"\n\nDELIVERABLE_DEVICE=`hdiutil attach -private \"$DELIVERABLE_INTERMEDIATE_FILENAME\" | grep Apple_partition_scheme | cut -f1`\n\n\"$SYSTEM_DEVELOPER_TOOLS/CpMac\" -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME \"/Volumes/$DELIVERABLE_VOLUME_NAME\"\n\nhdiutil detach $DELIVERABLE_DEVICE\n\nrm -f $DELIVERABLE_FILENAME\nhdiutil convert \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -format UDZO -imagekey zlib-level=9 -o \"$DELIVERABLE_FILENAME\"\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\n\nhdiutil unflatten \"$DELIVERABLE_FILENAME\"\n\"$SYSTEM_DEVELOPER_TOOLS/Rez\" $SYSTEM_DEVELOPER_DIR/Headers/FlatCarbon/*.r \"$SOURCE_ROOT/LGPL.r\" -a -o \"$DELIVERABLE_FILENAME\"\nhdiutil flatten \"$DELIVERABLE_FILENAME\"\n\n\n\n";
 		};
+		44923A78072C57E90070AA26 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = CHMApplication.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44923A79072C57E90070AA26 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = CHMApplication.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44923A7A072C57E90070AA26 = {
+			fileRef = 44923A78072C57E90070AA26;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44923A7B072C57E90070AA26 = {
+			fileRef = 44923A79072C57E90070AA26;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44949779073D406800D8BC20 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = MacPAD.url;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4494977A073D406800D8BC20 = {
+			fileRef = 44949779073D406800D8BC20;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44949839073D56ED00D8BC20 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = MacPAD.plist;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4494984B073D5A1700D8BC20 = {
+			children = (
+				4494984C073D5A1700D8BC20,
+				4494984D073D5A1700D8BC20,
+			);
+			isa = PBXGroup;
+			path = MacPAD;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4494984C073D5A1700D8BC20 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = MacPADSocket.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4494984D073D5A1700D8BC20 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = MacPADSocket.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4494984E073D5A1700D8BC20 = {
+			fileRef = 4494984C073D5A1700D8BC20;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4494984F073D5A1700D8BC20 = {
+			fileRef = 4494984D073D5A1700D8BC20;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44A67DE00742A04300D4714F = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = French;
+			path = French.lproj/VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501B006A587BA00CE0A8E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = CHMVersionChecker.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501B106A587BA00CE0A8E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = CHMVersionChecker.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501B206A587BA00CE0A8E = {
+			fileRef = 44B501B006A587BA00CE0A8E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44B501B306A587BA00CE0A8E = {
+			fileRef = 44B501B106A587BA00CE0A8E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44B501B606A5885E00CE0A8E = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = English;
+			path = English.lproj/VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501B806A58A7D00CE0A8E = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			path = chmox.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501B906A58A7D00CE0A8E = {
+			fileRef = 44B501B806A58A7D00CE0A8E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44B501C806A58D3300CE0A8E = {
+			children = (
+				44B501B606A5885E00CE0A8E,
+				44A67DE00742A04300D4714F,
+			);
+			isa = PBXVariantGroup;
+			name = VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44B501C906A58D3300CE0A8E = {
+			fileRef = 44B501C806A58D3300CE0A8E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		44B7AED10675301E00B51920 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.icns;
@@ -586,11 +756,35 @@
 			settings = {
 			};
 		};
+		44D62F6906D94D5500C6711F = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
+			name = French;
+			path = French.lproj/Credits.rtf;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44D62F7906D94F7200C6711F = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = French;
+			path = French.lproj/CHMDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		44D7FFF0065A9C7B00D2B23E = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			path = prefix.pch;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44DA07230694985300777FAE = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = LICENSE.txt;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -661,8 +855,6 @@
 //4A3
 //4A4
 		4A9504D0FFE6A4CB11CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
@@ -677,8 +869,6 @@
 			name = Development;
 		};
 		4A9504D1FFE6A4CB11CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = YES;
@@ -728,7 +918,9 @@
 				GCC_PREFIX_HEADER = prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "CHM_USE_PREAD CHM_MT";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
@@ -765,6 +957,9 @@
 				442BBA310653ED630041C2A9,
 				44F984BF06576CA60076336E,
 				44F984FA065774580076336E,
+				44B501B206A587BA00CE0A8E,
+				44923A7A072C57E90070AA26,
+				4494984E073D5A1700D8BC20,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -782,6 +977,9 @@
 				443011B9067E54140054A7C5,
 				443011D3067E65980054A7C5,
 				443011D4067E65980054A7C5,
+				44B501C906A58D3300CE0A8E,
+				44B501B906A58A7D00CE0A8E,
+				4494977A073D406800D8BC20,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -822,6 +1020,9 @@
 				442BBA320653ED630041C2A9,
 				44F984C006576CA60076336E,
 				44F984FB065774580076336E,
+				44B501B306A587BA00CE0A8E,
+				44923A7B072C57E90070AA26,
+				4494984F073D5A1700D8BC20,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

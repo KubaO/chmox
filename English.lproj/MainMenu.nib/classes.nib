@@ -1,4 +1,22 @@
 {
-    IBClasses = ({CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }); 
+    IBClasses = (
+        {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = CHMApplication; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {changePreference = id; checkForUpdates = id; closeWindow = id; update = id; }; 
+            CLASS = CHMVersionChecker; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                checkAutomaticallyButton = NSButton; 
+                updateDescriptionTextField = NSTextField; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
     IBVersion = 1; 
 }
