@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 
 #import "CHMDocument.h"
@@ -99,6 +99,7 @@
 {
     return [_container uniqueId];
 }
+
 
 
 @end

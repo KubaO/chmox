@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #import <Cocoa/Cocoa.h>
@@ -30,6 +30,7 @@
     IBOutlet NSOutlineView *_tocView;
     IBOutlet NSTableView *_favoritesView;
     IBOutlet NSTabView *_drawerView;
+    IBOutlet id _historyToolbarItemView;
 }
 
 - (void)setupToolbar;

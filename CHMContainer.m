@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 
 #include <openssl/sha.h>
@@ -144,11 +144,11 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
     
     struct chmUnitInfo info;
     if( chm_resolve_object( _handle, [path UTF8String], &info ) != CHM_RESOLVE_SUCCESS ) {
-		NSLog( @"Unable to find %@", path );
+        NSLog( @"Unable to find %@", path );
         return nil;
     }
     
-    NSLog( @"Found object %@ (%qu bytes)", path, (long long)info.length );
+    DEBUG_OUTPUT( @"Found object %@ (%qu bytes)", path, (long long)info.length );
     
     void *buffer = malloc( info.length );
     
@@ -172,7 +172,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
     NSData *data = [self dataWithContentsOfObject:objectPath];
     if( data ) {
 	// NSUTF8StringEncoding / NSISOLatin1StringEncoding / NSUnicodeStringEncoding
-	[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+	return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
     }
     
     return nil;

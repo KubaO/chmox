@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import "CHMTopic.h"
@@ -84,9 +84,9 @@
 }
 
 
-- (CHMTopic *)objectInSubTopicsAtIndex:(unsigned int)index
+- (CHMTopic *)objectInSubTopicsAtIndex:(unsigned int)theIndex
 {
-    return _subTopics? [_subTopics objectAtIndex:index] : nil;
+    return _subTopics? [_subTopics objectAtIndex:theIndex] : nil;
 }
 
 #pragma mark Mutators
@@ -110,25 +110,25 @@
 - (void)addObject:(CHMTopic *)topic
 {
     if( !_subTopics ) {
-		_subTopics = [[NSMutableArray alloc] init];
+        _subTopics = [[NSMutableArray alloc] init];
     }
     
     [_subTopics addObject:topic];
 }
 
-- (void)insertObject:(CHMTopic *)topic inSubTopicsAtIndex:(unsigned int)index
+- (void)insertObject:(CHMTopic *)topic inSubTopicsAtIndex:(unsigned int)theIndex
 {
     if( !_subTopics ) {
-		_subTopics = [[NSMutableArray alloc] init];
+        _subTopics = [[NSMutableArray alloc] init];
     }
     
-    [_subTopics insertObject:topic atIndex:index];
+    [_subTopics insertObject:topic atIndex:theIndex];
 }
 
-- (void)removeObjectFromSubTopicsAtIndex:(unsigned int)index
+- (void)removeObjectFromSubTopicsAtIndex:(unsigned int)theIndex
 {
     if( _subTopics ) {
-	[_subTopics removeObjectAtIndex:index];
+	[_subTopics removeObjectAtIndex:theIndex];
     }
 }
 

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 //
 
 #import "WebKit/WebKit.h"
@@ -37,6 +37,7 @@ static NSString *FAVORITES_TAB_ID = @"favoritesTab";
 static NSString *DRAWER_TOGGLE_TOOL_ID = @"chmox.drawerToggle";
 static NSString *SMALLER_TEXT_TOOL_ID = @"chmox.smallerText";
 static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
+static NSString *HISTORY_TOOL_ID = @"chmox.history";
 
 
 #pragma mark NSWindowController overridden method
@@ -266,6 +267,23 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 	[ _contentsView goForward ];
 }
 
+- (void)printDocument:(id)sender {
+    // Obtain a custom view that will be printed
+    NSView *docView = [[[_contentsView mainFrame] frameView] documentView];
+    
+    // Construct the print operation and setup Print panel
+    NSPrintOperation *op = [NSPrintOperation printOperationWithView:docView
+                                                          printInfo:[[self document] printInfo]];
+				
+    [op setShowPanels:YES];
+
+    // Run operation, which shows the Print panel if showPanels was YES
+    [[self document] runModalPrintOperation:op
+                                   delegate:nil
+                             didRunSelector:NULL
+                                contextInfo:NULL];
+}
+
 #pragma mark Toolbar related methods
 
 - (void)setupToolbar
@@ -284,11 +302,12 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
         DRAWER_TOGGLE_TOOL_ID,
         SMALLER_TEXT_TOOL_ID,
         BIGGER_TEXT_TOOL_ID,
+//        HISTORY_TOOL_ID,
+        NSToolbarPrintItemIdentifier,
         NSToolbarSeparatorItemIdentifier,
         NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier,
         NSToolbarCustomizeToolbarItemIdentifier,
-//        NSToolbarPrintItemIdentifier,
         nil
         ];
 }
@@ -296,11 +315,10 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:
+        DRAWER_TOGGLE_TOOL_ID,
         SMALLER_TEXT_TOOL_ID,
         BIGGER_TEXT_TOOL_ID,
         NSToolbarFlexibleSpaceItemIdentifier,
-        DRAWER_TOGGLE_TOOL_ID,
-//        NSToolbarPrintItemIdentifier,
         nil
         ];
 }
@@ -333,6 +351,19 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
         [item setTarget:self];
         [item setAction:@selector(makeTextBigger:)];
     }
+    else if ( [itemIdentifier isEqualToString:HISTORY_TOOL_ID] ) {
+        [_historyToolbarItemView setLabel:nil forSegment:0];
+        [_historyToolbarItemView setLabel:nil forSegment:1];
+        //[_historyToolbarItemView sizeToFit];
+        NSRect frame = [_historyToolbarItemView frame];
+        [item setLabel:NSLocalizedString( HISTORY_TOOL_ID, nil )];
+        [item setView:_historyToolbarItemView];
+        [item setMinSize:frame.size];
+        [item setMaxSize:frame.size];
+//        [item setTarget:self];
+//        [item setAction:@selector(makeTextBigger:)];
+    }
+    
     
     return [item autorelease];
 }
@@ -350,5 +381,21 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
     
     return YES;
 }
+
+
+#ifdef DEBUG_MODE
+
+- (BOOL) respondsToSelector: (SEL) aSelector
+{
+    BOOL result = [super respondsToSelector: aSelector];
+
+    if( !result ) {
+        NSLog( @"Tested for selector %s", (char *) aSelector );
+    }
+
+    return result;
+}
+
+#endif
 
 @end

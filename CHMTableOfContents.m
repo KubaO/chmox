@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #import "CHMTableOfContents.h"
@@ -104,7 +104,7 @@ static htmlSAXHandler saxHandler = {
 	    xmlFreeDoc( doc );
 	}
 
-	NSLog( @"Root topics: %@", _rootTopics );
+	DEBUG_OUTPUT( @"Root topics: %@", _rootTopics );
 
     }
     
@@ -161,12 +161,12 @@ static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, co
 	const xmlChar *type = NULL;
 	const xmlChar *value = NULL;
 	
-	for( int index = 0; atts[ index ] != NULL ; index += 2 ) {
-	    if( !strcasecmp( "name", atts[ index ] ) ) {
-		type = atts[ index + 1 ];
+	for( int i = 0; atts[ i ] != NULL ; i += 2 ) {
+	    if( !strcasecmp( "name", atts[ i ] ) ) {
+		type = atts[ i + 1 ];
 	    }
-	    else if( !strcasecmp( "value", atts[ index ] ) ) {
-		value = atts[ index + 1 ];
+	    else if( !strcasecmp( "value", atts[ i ] ) ) {
+		value = atts[ i + 1 ];
 	    }
 	}
 	
@@ -243,10 +243,10 @@ static void createNewTopic( TOCBuilderContext *context )
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView
-	    child:(int)index
+	    child:(int)theIndex
 	   ofItem:(id)item
 {
-    return item? [item objectInSubTopicsAtIndex:index] : [_rootTopics objectAtIndex:index];
+    return item? [item objectInSubTopicsAtIndex:theIndex] : [_rootTopics objectAtIndex:theIndex];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView
