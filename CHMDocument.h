@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import <AppKit/AppKit.h>
@@ -31,6 +31,8 @@
     CHMWindowController *_windowController;
 
     CHMContainer *_container;
+    CHMTableOfContents *_tableOfContents;
+
     NSMutableArray *_bookmarks;
     NSMutableArray *_searchResults;
 }

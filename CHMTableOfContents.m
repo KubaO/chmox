@@ -16,12 +16,13 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import "CHMTableOfContents.h"
 #import "CHMContainer.h"
 #import "CHMTopic.h"
+#import "CHMURLProtocol.h"
 
 #import <libxml/HTMLparser.h>
 
@@ -204,7 +205,7 @@ static void createNewTopic( TOCBuilderContext *context )
     NSURL *location = nil;
     
     if( context->path ) {
-	location = [NSURL URLWithString:context->path relativeToURL:[context->container baseURL]];
+	location = [CHMURLProtocol URLWithPath:context->path inContainer:context->container];
     }
 
     context->lastTopic = [[CHMTopic alloc] initWithName:context->name location:location];

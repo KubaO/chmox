@@ -16,28 +16,20 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #include <openssl/sha.h>
 #import "CHMContainer.h"
-#import "CHMTableOfContents.h"
 #import "chm_lib.h"
 
 @implementation CHMContainer
-
-static NSMutableDictionary *_allContainers = nil;
 
 #pragma mark Factory
 
 + (id)containerWithContentsOfFile:(NSString *)chmFilePath
 {
     return [[CHMContainer alloc] initWithContentsOfFile:chmFilePath];
-}
-
-+ (id)containerForUniqueId:(NSString *)uniqueId
-{
-    return [_allContainers objectForKey:uniqueId];
 }
 
 
@@ -51,14 +43,13 @@ static NSMutableDictionary *_allContainers = nil;
 	
 	_path = [chmFilePath retain];
 	
+	_uniqueId = nil;
+	_title = nil;
+	_homePath = nil;
+	_tocPath = nil;
+	_indexPath = nil;
+
 	[self loadMetadata];
-	
-	if( !_allContainers ) {
-	    _allContainers = [[NSMutableDictionary alloc] init];
-	}
-	[_allContainers setObject:self forKey:_uniqueId];
-	
-	_toc = [[CHMTableOfContents alloc] initWithContainer:self];
     }
     
     return self;
@@ -67,38 +58,44 @@ static NSMutableDictionary *_allContainers = nil;
 
 - (void) dealloc
 {
-    if( _uniqueId ) {
-	[_allContainers removeObjectForKey: _uniqueId];
-	[_uniqueId release];
-    }
-    
     [_path release];
-    [_title release];
-    [_baseURL release];
-    [_homeURL release];
-    [_toc release];
-    
+
     if( _handle ) {
         chm_close( _handle );
     }
+
+    if( _uniqueId ) {
+	[_uniqueId release];
+    }
+    
+    if( _title ) {
+	[_title release];
+    }
+    
+    if( _homePath ) {
+	[_homePath release];
+    }    
+
+    if( _tocPath ) {
+	[_tocPath release];
+    }    
+
+    if( _indexPath ) {
+	[_indexPath release];
+    }    
 }
 
 
 #pragma mark Accessors
 
-- (NSURL *)baseURL
+- (NSString *)homePath
 {
-    return _baseURL;
-}
-
-- (NSURL *)homeURL
-{
-    return _homeURL;
+    return _homePath;
 }
 
 - (NSString *)title
 {
-    return _title;
+    return _title? _title : _path;
 }
 
 - (NSString *)uniqueId 
@@ -106,9 +103,9 @@ static NSMutableDictionary *_allContainers = nil;
     return _uniqueId;
 }
 
-- (CHMTableOfContents *)tableOfContents
+- (NSString *)tocPath
 {
-    return _toc;
+    return _tocPath;
 }
 
 #pragma mark Basic CHM reading operations
@@ -198,8 +195,6 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 #pragma mark CHM setup
 
 - (BOOL)loadMetadata {
-    NSString *homePath = @"";
-
     //--- Start with WINDOWS object ---
     NSData *windowsData = [self dataWithContentsOfObject:@"/#WINDOWS"];
     NSData *stringsData = [self dataWithContentsOfObject:@"/#STRINGS"];
@@ -212,24 +207,24 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 	for( int entryIndex = 0; entryIndex < entryCount; ++entryIndex ) {
 	    unsigned long entryOffset = 8 + ( entryIndex * entrySize );
 	    
-	    if( ( _title == nil ) || ( [_title length] == 0 ) ) { 
+	    if( !_title || ( [_title length] == 0 ) ) { 
 		_title = readString( stringsData, readLong( windowsData, entryOffset + 0x14 ) );
 		NSLog( @"Title: %@", _title );
 	    }
 	    
-	    if( ( _tocPath == nil ) || ( [_tocPath length] == 0 ) ) { 
+	    if( !_tocPath || ( [_tocPath length] == 0 ) ) { 
 		_tocPath = readString( stringsData, readLong( windowsData, entryOffset + 0x60 ) );
 		NSLog( @"Table of contents: %@", _tocPath );
 	    }
 	    
-	    if( ( _indexPath == nil ) || ( [_indexPath length] == 0 ) ) { 
+	    if( !_indexPath || ( [_indexPath length] == 0 ) ) { 
 		_indexPath = readString( stringsData, readLong( windowsData, entryOffset + 0x64 ) );
 		NSLog( @"Index: %@", _indexPath );
 	    }
 	    
-	    if( ( homePath == nil ) || ( [homePath length] == 0 ) ) { 
-		homePath = readString( stringsData, readLong( windowsData, entryOffset + 0x68 ) );
-		NSLog( @"Home: %@", homePath );
+	    if( !_homePath || ( [_homePath length] == 0 ) ) { 
+		_homePath = readString( stringsData, readLong( windowsData, entryOffset + 0x68 ) );
+		NSLog( @"Home: %@", _homePath );
 	    }
 	}
     }
@@ -245,28 +240,28 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 	switch( readShort( systemData, offset ) ) {
 	    // Table of contents file
 	    case 0:
-		if( ( _tocPath == nil ) || ( [_tocPath length] == 0 ) ) {
+		if( !_tocPath || ( [_tocPath length] == 0 ) ) {
 		    _tocPath = readString( systemData, offset + 4 );
 		}
 		break;
 		
 		// Index file
 	    case 1:
-		if( ( _indexPath == nil ) || ( [_indexPath length] == 0 ) ) {
+		if( !_indexPath || ( [_indexPath length] == 0 ) ) {
 		    _indexPath = readString( systemData, offset + 4 );
 		}
 		break;
 		
 		// Home page
 	    case 2:
-		if( [homePath length] == 0 ) {
-		    homePath = readString( systemData, offset + 4 );
+		if( !_homePath || ( [_homePath length] == 0 ) ) {
+		    _homePath = readString( systemData, offset + 4 );
 		}
 		break;
 		
 		// Title
 	    case 3:
-		if( ( _title == nil ) || ( [_title length] == 0 ) ) {
+		if( !_title || ( [_title length] == 0 ) ) {
 		    _title = readString( systemData, offset + 4 );
 		    NSLog( @"Title: %@", _title );
 		}
@@ -297,15 +292,25 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
     unsigned char digest[ SHA_DIGEST_LENGTH ];
     SHA1( [systemData bytes], [systemData length], digest );
     unsigned int *ptr = (unsigned int *) digest;
-    _uniqueId = [NSString stringWithFormat:@"%x%x%x%x%x", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4]];
+    _uniqueId = [[NSString alloc] initWithFormat:@"%x%x%x%x%x", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4]];
     NSLog( @"UniqueId=%@", _uniqueId );
 
-    //--- Container URLs ---
-    _baseURL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"chmox-internal://%@/", _uniqueId]];
-    NSLog( @"baseURL: %@", _baseURL );
+    if( _title ) {
+	[_title retain];
+    }
+
+    if( _homePath ) {
+	[_homePath retain];
+    }
     
-    _homeURL = [NSURL URLWithString:homePath relativeToURL:_baseURL];
-    NSLog( @"homeURL: %@", _homeURL );
+    if( _tocPath ) {
+	[_tocPath retain];
+    }
+    
+    if( _indexPath ) {
+	[_indexPath retain];
+    }
+    
     return YES;
 }
 

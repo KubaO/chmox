@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import "CHMURLProtocol.h"
@@ -33,6 +33,43 @@
     return [super initWithRequest:request cachedResponse:cachedResponse client:client];
 }
 
+#pragma mark CHM URL utils
+
+static NSMutableDictionary *_containers = nil;
+static NSMutableDictionary *_baseURLs = nil;
+
++ (void)registerContainer:(CHMContainer *)container
+{
+    NSString *key = [container uniqueId];
+
+    if( !_containers ) {
+	_containers = [[NSMutableDictionary alloc] init];
+	_baseURLs = [[NSMutableDictionary alloc] init];
+    }
+    
+    NSURL *baseURL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"chmox-internal://%@/", key]];
+    [_containers setObject:container forKey:key];
+    [_baseURLs setObject:baseURL forKey:key];
+}
+
++ (CHMContainer *)containerForUniqueId:(NSString *)uniqueId
+{
+    return _containers? [_containers objectForKey:uniqueId] : nil;
+}
+
++ (void)unregisterContainer:(CHMContainer *)container
+{
+    NSString *key = [container uniqueId];
+
+    [_containers removeObjectForKey:key];
+    [_baseURLs removeObjectForKey:key];
+}
+
++ (NSURL *)URLWithPath:(NSString *)path inContainer:(CHMContainer *)container
+{
+    NSURL *baseURL = [_baseURLs objectForKey:[container uniqueId]];
+    return baseURL? [NSURL URLWithString:path relativeToURL:baseURL] : nil; 
+}
 
 #pragma mark NSURLProtocol overriding
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
@@ -72,7 +109,7 @@
  CHMContainer *container = [CHMContainer containerWithContentsOfFile:containerPath];
  */
 
-    CHMContainer *container = [CHMContainer containerForUniqueId:[url host]];
+    CHMContainer *container = [CHMURLProtocol containerForUniqueId:[url host]];
 	    
     if( !container ) {
 	[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];

@@ -16,12 +16,14 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import "CHMDocument.h"
 #import "CHMWindowController.h"
 #import "CHMContainer.h"
+#import "CHMTableOfContents.h"
+#import "CHMURLProtocol.h"
 
 @implementation CHMDocument
 
@@ -39,7 +41,11 @@
 
 - (void) dealloc
 {
-    [_container release];
+    if( _container ) {
+	[CHMURLProtocol unregisterContainer:_container];
+	[_tableOfContents release];
+	[_container release];
+    }
 }
 
 #pragma mark NSDocument
@@ -56,6 +62,9 @@
     
     _container = [CHMContainer containerWithContentsOfFile:fileName];
     if( !_container ) return NO;
+
+    [CHMURLProtocol registerContainer:_container];
+    _tableOfContents = [[CHMTableOfContents alloc] initWithContainer:_container];
 
     return YES;
 }
@@ -75,12 +84,12 @@
 
 - (NSURL *)currentLocation
 {
-    return [_container homeURL];
+    return [CHMURLProtocol URLWithPath:[_container homePath] inContainer:_container];
 }
 
 - (CHMTableOfContents *)tableOfContents
 {
-    return [_container tableOfContents];
+    return _tableOfContents;
 }
 
 - (NSString *)uniqueId

@@ -16,12 +16,11 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import <Foundation/Foundation.h>
 
-@class CHMTableOfContents;
 struct chmFile;
 
 @interface CHMContainer : NSObject {
@@ -30,15 +29,12 @@ struct chmFile;
     
     NSString *_path;
     NSString *_title;
-    NSURL *_baseURL;
-    NSURL *_homeURL;
+    NSString *_homePath;
     NSString *_tocPath;
     NSString *_indexPath;
-    CHMTableOfContents *_toc;
 }
 
 + (id)containerWithContentsOfFile:(NSString *)path;
-+ (id)containerForUniqueId:(NSString *)uniqueId;
 
 - (id)initWithContentsOfFile:(NSString *)path;
 
@@ -50,8 +46,7 @@ struct chmFile;
 
 - (NSString *)title;
 - (NSString *)uniqueId;
-- (CHMTableOfContents *)tableOfContents;
-- (NSURL *)baseURL;
-- (NSURL *)homeURL;
+- (NSString *)tocPath;
+- (NSString *)homePath;
 
 @end
