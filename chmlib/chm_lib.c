@@ -1,4 +1,4 @@
-/* $Id: chm_lib.c,v 1.1.1.1 2004-05-18 22:31:58 sboisson Exp $ */
+/* $Id: chm_lib.c,v 1.2 2004-06-04 22:40:23 sboisson Exp $ */
 /***************************************************************************
  *             chm_lib.c - CHM archive manipulation routines               *
  *                           -------------------                           *
@@ -221,6 +221,7 @@ static int _unmarshal_uchar_array(unsigned char **pData,
     return 1;
 }
 
+/*
 static int _unmarshal_int16(unsigned char **pData,
                             unsigned long *pLenRemain,
                             Int16 *dest)
@@ -244,6 +245,7 @@ static int _unmarshal_uint16(unsigned char **pData,
     *pLenRemain -= 2;
     return 1;
 }
+*/
 
 static int _unmarshal_int32(unsigned char **pData,
                             unsigned long *pLenRemain,
@@ -680,7 +682,7 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
                               UInt64 os,
                               Int64 len)
 {
-    Int64 readLen=0, oldOs=0;
+    Int64 readLen=0; //, oldOs=0;
     if (h->fd  ==  CHM_NULL_FD)
         return readLen;
 

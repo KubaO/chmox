@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #import "WebKit/WebKit.h"
@@ -26,9 +26,18 @@
 
 @implementation CHMWindowController
 
-#pragma mark NSWindowController overrided method
 
-static const NSRect MAX_RECT = { { 0.0, 0.0 }, { 9999.0, 9999.0 } };
+- (void)updateToolTipRects
+{
+    [_tocView removeAllToolTips];
+    NSRange range = [_tocView rowsInRect:[_tocView visibleRect]];
+    
+    for( int index = range.location; index < NSMaxRange( range ); ++index ) {
+	[_tocView addToolTipRect:[_tocView rectOfRow:index] owner:self userData:NULL];
+    }
+}
+
+#pragma mark NSWindowController overrided method
 
 - (void)windowDidLoad
 {
@@ -44,9 +53,9 @@ static const NSRect MAX_RECT = { { 0.0, 0.0 }, { 9999.0, 9999.0 } };
     
     [_tocView setDataSource:[[self document] tableOfContents]];
     [_tocView setDelegate:self];
-    [_tocView addToolTipRect:MAX_RECT owner:self userData:nil];
+    [self updateToolTipRects];
 
-// [self setupToolbar];
+    // [self setupToolbar];
 
     [_drawer open];
 }
