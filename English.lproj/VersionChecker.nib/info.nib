@@ -10,12 +10,10 @@
 	<integer>0</integer>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>59</integer>
 		<integer>10</integer>
-		<integer>51</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>7S215</string>
+	<string>7R28</string>
 	<key>IBUsesTextArchiving</key>
 	<true/>
 </dict>
