@@ -5,8 +5,6 @@ FEATURES
 - Index
 - Favorites
 - Toolbar
-- Application icon
-- Document icon
 - Printing
 - History (back & forward)
 - Home page
@@ -17,6 +15,7 @@ ENHANCEMENTS
 - Select correct topic in table of content when user clicks on internal link
 - Better handling of invalid/corrupt CHM
 - Better handling of text in different charset than Latin1
+- Document icon
 
 BUGS FIXES
 - Update TOC's tool tip rectangles when drawer is resized

@@ -161,6 +161,7 @@
 			children = (
 				2A37F4B5FDCFA73011CA2CEA,
 				445DEAF707B42A4A0008D692,
+				4410438D07B4F83D00B3D4B9,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -180,6 +181,7 @@
 			children = (
 				2A37F4B7FDCFA73011CA2CEA,
 				445DEAF907B42BAE0008D692,
+				4410436C07B4F11900B3D4B9,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -208,7 +210,6 @@
 				443011B4067E54140054A7C5,
 				443011B5067E54140054A7C5,
 				443011B6067E54140054A7C5,
-				44B501B806A58A7D00CE0A8E,
 				44B7AED10675301E00B51920,
 				2A37F4B9FDCFA73011CA2CEA,
 				2A37F4B6FDCFA73011CA2CEA,
@@ -279,6 +280,22 @@
 //442
 //443
 //444
+		4410436C07B4F11900B3D4B9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = French;
+			path = French.lproj/MainMenu.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4410438D07B4F83D00B3D4B9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = French;
+			path = French.lproj/CHMDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		442BB9D40653EB340041C2A9 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -789,13 +806,6 @@
 			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/VersionChecker.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		44B501B806A58A7D00CE0A8E = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.icns;
-			path = chmox.icns;
 			refType = 4;
 			sourceTree = "<group>";
 		};

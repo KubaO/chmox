@@ -1,11 +1,16 @@
 Version 0.3
+- French translation
+- German translation by Thomas Meitz
+- Improved about box
+- Application icon by David Beijersbergen van Henegouwen
+- Document icon
 - Added version checking
 - Fixed possible memory leaks
 - Merge changes submited by Sergey Malyshev
     * Added "View" menu
     * Fixed "white artifact" bug
     * Replaced delegate setup code by NIB connections 
-    * Fixed miscellaneous bugs (memory leaks
+    * Fixed miscellaneous bugs (memory leaks)
 
 Version 0.2
 - Distribution as an image disk
