@@ -12,6 +12,8 @@
 				<string>chm</string>
 				<string>CHM</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>chmdoc.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/mshelp</string>
