@@ -89,6 +89,13 @@
 			);
 			hasScannedForEncodings = 1;
 			isa = PBXProject;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				Italian,
+			);
 			mainGroup = 2A37F4AAFDCFA73011CA2CEA;
 			projectDirPath = "";
 			targets = (
@@ -162,6 +169,7 @@
 				2A37F4B5FDCFA73011CA2CEA,
 				445DEAF707B42A4A0008D692,
 				4410438D07B4F83D00B3D4B9,
+				44C8E71707B8267200F5DADD,
 			);
 			isa = PBXVariantGroup;
 			name = CHMDocument.nib;
@@ -182,6 +190,7 @@
 				2A37F4B7FDCFA73011CA2CEA,
 				445DEAF907B42BAE0008D692,
 				4410436C07B4F11900B3D4B9,
+				44C8E70E07B825EC00F5DADD,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -228,6 +237,7 @@
 			children = (
 				2A37F4BAFDCFA73011CA2CEA,
 				44D62F6906D94D5500C6711F,
+				44916E9C07B97CED0095F0CE,
 			);
 			isa = PBXVariantGroup;
 			name = Credits.rtf;
@@ -480,6 +490,7 @@
 				445DEACA07B4085C0008D692,
 				445DEAD907B409900008D692,
 				445DEAEB07B40A9F0008D692,
+				44B8E1B807B8245D002BF574,
 			);
 			isa = PBXVariantGroup;
 			name = Localizable.strings;
@@ -675,7 +686,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# Create DMG for delivery\n\nDELIVERABLE_SIZE=1 # megabytes\nDELIVERABLE_INTERMEDIATE_FILENAME=\"$TEMP_FILES_DIR/$PRODUCT_NAME.dmg\"\nDELIVERABLE_VERSION=`defaults read $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME/Contents/Info CFBundleVersion`\nDELIVERABLE_FILENAME=\"$HOME/Desktop/$PRODUCT_NAME-$DELIVERABLE_VERSION.dmg\"\nDELIVERABLE_VOLUME_NAME=\"$PRODUCT_NAME $DELIVERABLE_VERSION\"\n\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\nhdiutil create \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -ov -megabytes $DELIVERABLE_SIZE -fs HFS+ -volname \"$DELIVERABLE_VOLUME_NAME\"\n\nDELIVERABLE_DEVICE=`hdiutil attach -private \"$DELIVERABLE_INTERMEDIATE_FILENAME\" | grep Apple_partition_scheme | cut -f1`\n\n\"$SYSTEM_DEVELOPER_TOOLS/CpMac\" -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME \"/Volumes/$DELIVERABLE_VOLUME_NAME\"\n\nhdiutil detach $DELIVERABLE_DEVICE\n\nrm -f $DELIVERABLE_FILENAME\nhdiutil convert \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -format UDZO -imagekey zlib-level=9 -o \"$DELIVERABLE_FILENAME\"\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\n\nhdiutil unflatten \"$DELIVERABLE_FILENAME\"\n\"$SYSTEM_DEVELOPER_TOOLS/Rez\" $SYSTEM_DEVELOPER_DIR/Headers/FlatCarbon/*.r \"$SOURCE_ROOT/LGPL.r\" -a -o \"$DELIVERABLE_FILENAME\"\nhdiutil flatten \"$DELIVERABLE_FILENAME\"\n\n\n\n";
+			shellScript = "# Create DMG for delivery\n\n#DELIVERABLE_SIZE=2 # megabytes\n\nDELIVERABLE_SIZE=`du -kcL \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" | tail -1 | cut -f1`\nDELIVERABLE_SIZE=`expr \\( $DELIVERABLE_SIZE + 1500 \\) / 1024`\n\nDELIVERABLE_INTERMEDIATE_FILENAME=\"$TEMP_FILES_DIR/$PRODUCT_NAME.dmg\"\nDELIVERABLE_VERSION=`defaults read \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME/Contents/Info\" CFBundleVersion`\nDELIVERABLE_FILENAME=\"$HOME/Desktop/$PRODUCT_NAME-$DELIVERABLE_VERSION.dmg\"\nDELIVERABLE_VOLUME_NAME=\"$PRODUCT_NAME $DELIVERABLE_VERSION\"\n\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\nhdiutil create \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -ov -megabytes $DELIVERABLE_SIZE -fs HFS+ -volname \"$DELIVERABLE_VOLUME_NAME\"\n\nDELIVERABLE_DEVICE=`hdiutil attach -private \"$DELIVERABLE_INTERMEDIATE_FILENAME\" | grep Apple_partition_scheme | cut -f1`\n\n\"$SYSTEM_DEVELOPER_TOOLS/CpMac\" -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME \"/Volumes/$DELIVERABLE_VOLUME_NAME\"\n\nhdiutil detach $DELIVERABLE_DEVICE\n\nrm -f $DELIVERABLE_FILENAME\nhdiutil convert \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -format UDZO -imagekey zlib-level=9 -o \"$DELIVERABLE_FILENAME\"\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\n\nhdiutil unflatten \"$DELIVERABLE_FILENAME\"\n\"$SYSTEM_DEVELOPER_TOOLS/Rez\" $SYSTEM_DEVELOPER_DIR/Headers/FlatCarbon/*.r \"$SOURCE_ROOT/LGPL.r\" -a -o \"$DELIVERABLE_FILENAME\"\nhdiutil flatten \"$DELIVERABLE_FILENAME\"\n\n\n\n";
+		};
+		44916E9C07B97CED0095F0CE = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
+			name = Italian;
+			path = Italian.lproj/Credits.rtf;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		44923A78072C57E90070AA26 = {
 			fileEncoding = 4;
@@ -814,6 +833,7 @@
 				44B501B606A5885E00CE0A8E,
 				44A67DE00742A04300D4714F,
 				445DEAF307B427460008D692,
+				44C8E71807B8267F00F5DADD,
 			);
 			isa = PBXVariantGroup;
 			name = VersionChecker.nib;
@@ -838,6 +858,38 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		44B8E1B807B8245D002BF574 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = Italian;
+			path = Italian.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44C8E70E07B825EC00F5DADD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Italian;
+			path = Italian.lproj/MainMenu.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44C8E71707B8267200F5DADD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Italian;
+			path = Italian.lproj/CHMDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		44C8E71807B8267F00F5DADD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Italian;
+			path = Italian.lproj/VersionChecker.nib;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		44D62F6906D94D5500C6711F = {
 			isa = PBXFileReference;

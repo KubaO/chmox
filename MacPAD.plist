@@ -36,10 +36,10 @@
 	<string>Read your CHM documents natively on your Mac</string>
 	<key>productDownloadURL</key>
 	<array>
-		<string>http://prdownloads.sourceforge.net/chmox/Chmox-0.3.dmg?download</string>
+		<string>http://prdownloads.sourceforge.net/chmox/Chmox-0.4.dmg?download</string>
 	</array>
 	<key>productFileSize</key>
-	<string>160 K</string>
+	<string>251 K</string>
 	<key>productKeywords</key>
 	<array>
 		<string>chm</string>
@@ -69,6 +69,6 @@
 	<key>productRequirements</key>
 	<string>10.3 or later</string>
 	<key>productVersion</key>
-	<string>0.3</string>
+	<string>0.4</string>
 </dict>
 </plist>

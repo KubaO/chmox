@@ -1,3 +1,6 @@
+Version 0.4
+- Italian translation by Fabrizio
+
 Version 0.3
 - French translation
 - German translation by Thomas Meitz
