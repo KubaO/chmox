@@ -1,0 +1,113 @@
+//
+// Chmox a CHM file viewer for Mac OS X
+// Copyright (c) 2004 Stéphane Boisson.
+//
+// Chmox is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation; either version 2.1 of the License, or
+// (at your option) any later version.
+//
+// Chmox is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with Foobar; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// $Revision: 1.1.1.1 $
+//
+
+#import "CHMURLProtocol.h"
+#import "CHMContainer.h"
+
+@implementation CHMURLProtocol
+
+#pragma mark Lifecycle
+
+-(id)initWithRequest:(NSURLRequest *)request
+      cachedResponse:(NSCachedURLResponse *)cachedResponse
+	      client:(id <NSURLProtocolClient>)client
+{
+    return [super initWithRequest:request cachedResponse:cachedResponse client:client];
+}
+
+
+#pragma mark NSURLProtocol overriding
++ (BOOL)canInitWithRequest:(NSURLRequest *)request
+{
+    if( [[[request URL] scheme] isEqualToString:@"chmox-internal"] ) {
+	return YES;
+    }
+    else {
+	NSLog( @"CHMURLProtocol cannot handle %@", request );
+	return NO;
+    }
+}
+
+
++ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request
+{
+    return request;
+}
+
+
+-(void)startLoading
+{
+    NSLog( @"CHMURLProtocol:startLoading %@", [self request] );
+
+    NSURL *url = [[self request] URL];
+
+/*
+ NSString *rawPath = [[[self request] URL] path];
+ NSLog( @"rawPath: %@", rawPath );
+ NSRange separator = [rawPath rangeOfString:@"::/"];
+ NSString *containerPath = [rawPath substringToIndex:separator.location];
+ NSString *contentsPath = [rawPath substringFromIndex:( separator.location + 2 )];
+   
+ NSLog( @"containerPath: %@", containerPath );
+ NSLog( @"contentsPath: %@", contentsPath );
+   
+ CHMContainer *container = [CHMContainer containerWithContentsOfFile:containerPath];
+ */
+
+    CHMContainer *container = [CHMContainer containerForUniqueId:[url host]];
+	    
+    if( !container ) {
+	[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
+	return;
+    }
+
+    NSData *data = [container dataWithContentsOfObject:[url path]];
+    
+    if( !data ) {
+	[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
+	return;
+    }
+    
+    NSURLResponse *response = [[NSURLResponse alloc] initWithURL: [[self request] URL]
+							MIMEType:@"application/octet-stream"
+					   expectedContentLength:[data length]
+						textEncodingName:nil];
+    [[self client] URLProtocol:self     
+	    didReceiveResponse:response 
+	    cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+    
+    [[self client] URLProtocol:self didLoadData:data];
+    [[self client] URLProtocolDidFinishLoading:self];
+}
+
+
+-(void)stopLoading
+{
+//    NSLog( @"CHMURLProtocol:stopLoading" );
+}
+
+/*
+-(NSCachedURLResponse *)cachedResponse
+{
+}
+*/
+
+@end

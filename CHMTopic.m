@@ -1,0 +1,80 @@
+//
+// Chmox a CHM file viewer for Mac OS X
+// Copyright (c) 2004 Stéphane Boisson.
+//
+// Chmox is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation; either version 2.1 of the License, or
+// (at your option) any later version.
+//
+// Chmox is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with Foobar; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// $Revision: 1.1.1.1 $
+//
+
+#import "CHMTopic.h"
+
+
+@implementation CHMTopic
+
+#pragma mark Lifecycle
+
+- (id)initWithName:(NSString *)topicName location:(NSURL *)topicLocation
+{
+    if( self = [super init] ) {
+        _name = [topicName retain];
+        _location = [topicLocation retain];
+    }
+    
+    return self;
+}
+
+- (void) dealloc
+{
+    [_name release];
+    [_location release];
+}
+
+
+#pragma mark Accessors
+
+- (NSString *)name
+{
+    return _name;
+}
+
+- (NSURL *)location
+{
+    return _location;
+}
+
+
+#pragma mark Mutators
+
+- (void)setName:(NSString *)text
+{
+    if( _name != text ) {
+	[_name release];
+	_name = [text retain];
+    }
+}
+
+- (void)setLocation:(NSURL *)URL
+{
+    if( _location != URL ) {
+	[_location release];
+	_location = [URL retain];
+    }
+}
+
+
+
+
+@end
