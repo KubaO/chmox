@@ -17,6 +17,7 @@
                 "_drawer" = NSDrawer; 
                 "_drawerView" = NSTabView; 
                 "_favoritesView" = NSTableView; 
+                "_historyToolbarItemView" = id; 
                 "_tocView" = NSOutlineView; 
             }; 
             SUPERCLASS = NSWindowController; 
