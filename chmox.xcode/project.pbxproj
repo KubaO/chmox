@@ -113,6 +113,8 @@
 				2A37F4B8FDCFA73011CA2CEA,
 				2A37F4C3FDCFA73011CA2CEA,
 				19C28FB0FE9D524F11CA2CBB,
+				443011A2067E1E0C0054A7C5,
+				443011AC067E2B340054A7C5,
 			);
 			isa = PBXGroup;
 			name = iCHM;
@@ -199,8 +201,11 @@
 		};
 		2A37F4B8FDCFA73011CA2CEA = {
 			children = (
+				443011B4067E54140054A7C5,
+				443011B5067E54140054A7C5,
+				443011B6067E54140054A7C5,
+				44B7AED10675301E00B51920,
 				448AF677064AF92800FA37BD,
-				448AF678064AF92800FA37BD,
 				448AF679064AF92800FA37BD,
 				2A37F4B9FDCFA73011CA2CEA,
 				2A37F4B6FDCFA73011CA2CEA,
@@ -341,6 +346,61 @@
 			settings = {
 			};
 		};
+		443011A2067E1E0C0054A7C5 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = TODO.txt;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011AC067E2B340054A7C5 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = CHANGES.txt;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011B4067E54140054A7C5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "toolbar-smaller.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011B5067E54140054A7C5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "toolbar-drawer.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011B6067E54140054A7C5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "toolbar-bigger.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		443011B7067E54140054A7C5 = {
+			fileRef = 443011B4067E54140054A7C5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		443011B8067E54140054A7C5 = {
+			fileRef = 443011B5067E54140054A7C5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		443011B9067E54140054A7C5 = {
+			fileRef = 443011B6067E54140054A7C5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		448AF5A0064AA5E100FA37BD = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -404,13 +464,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		448AF678064AF92800FA37BD = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.tiff;
-			path = ToggleDrawer.tif;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		448AF679064AF92800FA37BD = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.tiff;
@@ -420,12 +473,6 @@
 		};
 		448AF67A064AF92800FA37BD = {
 			fileRef = 448AF677064AF92800FA37BD;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		448AF67B064AF92900FA37BD = {
-			fileRef = 448AF678064AF92800FA37BD;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -500,6 +547,19 @@
 		};
 		448AF700064AFD3500FA37BD = {
 			fileRef = 448AF6FC064AFD3500FA37BD;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		44B7AED10675301E00B51920 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			path = chmdoc.icns;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		44B7AED20675301E00B51920 = {
+			fileRef = 44B7AED10675301E00B51920;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -634,8 +694,8 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_ENABLE_TRIGRAPHS = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "CHM_USE_PREAD CHM_MT";
@@ -651,10 +711,11 @@
 				OTHER_LDFLAGS = "-lxml2 -lcrypto";
 				PRODUCT_NAME = Chmox;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = NO;
 				UNSTRIPPED_PRODUCT = NO;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			dependencies = (
 			);
@@ -688,8 +749,11 @@
 				8D15AC2E0486D014006FF6A4,
 				8D15AC2F0486D014006FF6A4,
 				448AF67A064AF92800FA37BD,
-				448AF67B064AF92900FA37BD,
 				448AF67C064AF92900FA37BD,
+				44B7AED20675301E00B51920,
+				443011B7067E54140054A7C5,
+				443011B8067E54140054A7C5,
+				443011B9067E54140054A7C5,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

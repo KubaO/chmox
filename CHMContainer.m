@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 //
 
 #include <openssl/sha.h>
@@ -131,6 +131,11 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
     return [NSString stringWithUTF8String:stringData];
 }
 
+static inline NSString * readTrimmedString( NSData *data, unsigned long offset ) {
+    const char *stringData = (char *)[data bytes] + offset;
+    return [[NSMutableString stringWithUTF8String:stringData] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 #pragma mark CHM Object loading
 
 - (NSData *)dataWithContentsOfObject: (NSString *)path
@@ -208,7 +213,7 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 	    unsigned long entryOffset = 8 + ( entryIndex * entrySize );
 	    
 	    if( !_title || ( [_title length] == 0 ) ) { 
-		_title = readString( stringsData, readLong( windowsData, entryOffset + 0x14 ) );
+		_title = readTrimmedString( stringsData, readLong( windowsData, entryOffset + 0x14 ) );
 		NSLog( @"Title: %@", _title );
 	    }
 	    
@@ -262,7 +267,7 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 		// Title
 	    case 3:
 		if( !_title || ( [_title length] == 0 ) ) {
-		    _title = readString( systemData, offset + 4 );
+		    _title = readTrimmedString( systemData, offset + 4 );
 		    NSLog( @"Title: %@", _title );
 		}
 		break;

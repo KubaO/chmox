@@ -12,6 +12,8 @@
 				<string>chm</string>
 				<string>CHM</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>chmdoc.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/mshelp</string>
@@ -41,7 +43,7 @@
 	<key>CFBundleSignature</key>
 	<string>iCHM</string>
 	<key>CFBundleVersion</key>
-	<string>0.1</string>
+	<string>0.2</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

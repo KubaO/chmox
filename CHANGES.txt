@@ -1,0 +1,11 @@
+Version 0.2
+- Added toolbar
+- Added text size customization
+- Fixed memory bug which caused crash when re-opening document
+- Fixed edit mode when double-clicking in table of content
+
+Version 0.1b
+- Added table of content drawer
+
+Version 0.1
+- Initial version

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #import "WebKit/WebKit.h"
@@ -25,6 +25,16 @@
 #import "CHMTopic.h"
 
 @implementation CHMWindowController
+
+// Tab items
+static NSString *TOC_TAB_ID = @"tocTab";
+static NSString *SEARCH_TAB_ID = @"searchTab";
+static NSString *FAVORITES_TAB_ID = @"favoritesTab";
+
+// Toolbar items
+static NSString *DRAWER_TOGGLE_TOOL_ID = @"chmox.drawerToggle";
+static NSString *SMALLER_TEXT_TOOL_ID = @"chmox.smallerText";
+static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 
 
 - (void)updateToolTipRects
@@ -48,15 +58,29 @@
     [self setShouldCloseDocument:YES];
     
     [_contentsView setPolicyDelegate:self];
-    [_contentsView setFrameLoadDelegate:self];   
+    [_contentsView setFrameLoadDelegate:self]; 
 // [_contentsView setUIDelegate:self];
     
     [_tocView setDataSource:[[self document] tableOfContents]];
     [_tocView setDelegate:self];
     [self updateToolTipRects];
 
-    // [self setupToolbar];
+    [self setupToolbar];
 
+    int tabIndex;
+    
+    // Remove Search tab
+    tabIndex = [_drawerView indexOfTabViewItemWithIdentifier:SEARCH_TAB_ID];
+    if( tabIndex != NSNotFound ) {
+	[_drawerView removeTabViewItem:[_drawerView tabViewItemAtIndex:tabIndex]];
+    }
+
+    // Remove Favorites tab
+    tabIndex = [_drawerView indexOfTabViewItemWithIdentifier:FAVORITES_TAB_ID];
+    if( tabIndex != NSNotFound ) {
+	[_drawerView removeTabViewItem:[_drawerView tabViewItemAtIndex:tabIndex]];
+    }
+    
     [_drawer open];
 }
 
@@ -67,11 +91,6 @@
 
 #pragma mark Toolbar related methods
 
-- (void)toggleDrawer {
-    NSLog( @"Toggle drawer" );
-    [_drawer toggle:self];
-}
-
 - (void)setupToolbar
 {
     NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"mainToolbar"];
@@ -79,7 +98,7 @@
     [toolbar setDelegate:self];
     [toolbar setAllowsUserCustomization:YES];
     [toolbar setAutosavesConfiguration:YES];
-    [[self window ] setToolbar:[toolbar autorelease]];
+    [[self window ] setToolbar:toolbar];
 }
 
 #pragma mark WebPolicyDelegate
@@ -152,7 +171,12 @@
     // Change icon
 }
 
-#pragma mark NSOutlineView actions
+#pragma mark Actions
+
+- (IBAction)toggleDrawer:(id)sender
+{
+    [_drawer toggle:self];
+}
 
 - (IBAction)displayTopic:(id)sender
 {
@@ -174,7 +198,9 @@
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:
-        @"ToggleDrawer",
+        DRAWER_TOGGLE_TOOL_ID,
+	SMALLER_TEXT_TOOL_ID,
+	BIGGER_TEXT_TOOL_ID,
         NSToolbarSeparatorItemIdentifier,
         NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier,
@@ -186,7 +212,9 @@
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:
-        @"ToggleDrawer",
+        DRAWER_TOGGLE_TOOL_ID,
+	SMALLER_TEXT_TOOL_ID,
+	BIGGER_TEXT_TOOL_ID,
         NSToolbarFlexibleSpaceItemIdentifier,
         NSToolbarPrintItemIdentifier,
         nil
@@ -200,22 +228,43 @@
 {
     NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier];
     
-    if ( [itemIdentifier isEqualToString:@"ToggleDrawer"] ) {
-        [item setLabel:@"Options"];
+    if ( [itemIdentifier isEqualToString:DRAWER_TOGGLE_TOOL_ID] ) {
+        [item setLabel:@"Drawer"];
         [item setPaletteLabel:[item label]];
-        [item setImage:[NSImage imageNamed:@"ToggleDrawer"]];
+        [item setImage:[NSImage imageNamed:@"toolbar-drawer"]];
         [item setTarget:self];
         [item setAction:@selector(toggleDrawer:)];
-    } else if ( [itemIdentifier isEqualToString:@"RemoveItem"] ) {
-        [item setLabel:@"Remove Record"];
+    }
+    else if ( [itemIdentifier isEqualToString:SMALLER_TEXT_TOOL_ID] ) {
+        [item setLabel:@"Smaller"];
         [item setPaletteLabel:[item label]];
-//        [item setImage:[NSImage imageNamed:@"Remove"]];
-//        [item setTarget:self];
-//        [item setAction:@selector(deleteRecord:)];
+        [item setImage:[NSImage imageNamed:@"toolbar-smaller"]];
+        [item setTarget:_contentsView];
+        [item setAction:@selector(makeTextSmaller:)];
+    }
+    else if ( [itemIdentifier isEqualToString:BIGGER_TEXT_TOOL_ID] ) {
+        [item setLabel:@"Bigger"];
+        [item setPaletteLabel:[item label]];
+        [item setImage:[NSImage imageNamed:@"toolbar-bigger"]];
+        [item setTarget:_contentsView];
+        [item setAction:@selector(makeTextLarger:)];
     }
     
     return [item autorelease];
 }
 
+-(BOOL)validateToolbarItem:(NSToolbarItem*)toolbarItem
+{
+    NSString *itemIdentifier = [toolbarItem itemIdentifier];
+    
+    if ( [itemIdentifier isEqualToString:SMALLER_TEXT_TOOL_ID] ) {
+	return [_contentsView canMakeTextSmaller];
+    }
+    else if ( [itemIdentifier isEqualToString:BIGGER_TEXT_TOOL_ID] ) {
+	return [_contentsView canMakeTextLarger];
+    }
+    
+    return YES;
+}
 
 @end

@@ -1,0 +1,24 @@
+$revision$
+
+FEATURES
+- Search
+- Index
+- Favorites
+- Toolbar
+- Application icon
+- Document icon
+- Printing
+- History (back & forward)
+- Home page
+
+ENHANCEMENTS
+- Disable drag'n drop of internal links
+- Preferences for drawer size
+- Select correct topic in table of content when user clicks on internal link
+- Better handling of invalid/corrupt CHM
+- Better handling of text in different charset than Latin1
+
+BUGS FIXES
+- Disable features in GUI which are not yet implemented
+- Remove french text from english resources
+- Strange white artifact sometime when user close document..
