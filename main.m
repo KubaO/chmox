@@ -16,23 +16,19 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CHMURLProtocol.h"
 
 int main( int argc, const char *argv[] )
 {
     @try {
-	[NSURLProtocol registerClass:[CHMURLProtocol class]];
-	
 	return NSApplicationMain( argc, argv );
     }
     @catch ( NSException *e ) {
 	NSLog( @"Exception: %@", e );
     }
     @finally {
-	[NSURLProtocol unregisterClass:[CHMURLProtocol class]];
     }
 }
