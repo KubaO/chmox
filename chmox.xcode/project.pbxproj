@@ -117,7 +117,7 @@
 				443011AC067E2B340054A7C5,
 			);
 			isa = PBXGroup;
-			name = iCHM;
+			name = Chmox;
 			path = "";
 			refType = 4;
 			sourceTree = "<group>";
@@ -201,6 +201,7 @@
 		};
 		2A37F4B8FDCFA73011CA2CEA = {
 			children = (
+				448CC7E5068A2ED200F9B0DB,
 				443011D1067E65980054A7C5,
 				443011D2067E65980054A7C5,
 				443011B4067E54140054A7C5,
@@ -551,6 +552,27 @@
 			settings = {
 			};
 		};
+		448CC7E5068A2ED200F9B0DB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.rez;
+			path = LGPL.r;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		448CC7FD068A319600F9B0DB = {
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# Create DMG for delivery\n\nDELIVERABLE_SIZE=1 # megabytes\nDELIVERABLE_INTERMEDIATE_FILENAME=\"$TEMP_FILES_DIR/$PRODUCT_NAME.dmg\"\nDELIVERABLE_VERSION=`defaults read $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME/Contents/Info CFBundleVersion`\nDELIVERABLE_FILENAME=\"$HOME/Desktop/$PRODUCT_NAME-$DELIVERABLE_VERSION.dmg\"\nDELIVERABLE_VOLUME_NAME=\"$PRODUCT_NAME $DELIVERABLE_VERSION\"\n\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\nhdiutil create \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -ov -megabytes $DELIVERABLE_SIZE -fs HFS+ -volname \"$DELIVERABLE_VOLUME_NAME\"\n\nDELIVERABLE_DEVICE=`hdiutil attach -private \"$DELIVERABLE_INTERMEDIATE_FILENAME\" | grep Apple_partition_scheme | cut -f1`\n\n\"$SYSTEM_DEVELOPER_TOOLS/CpMac\" -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME \"/Volumes/$DELIVERABLE_VOLUME_NAME\"\n\nhdiutil detach $DELIVERABLE_DEVICE\n\nrm -f $DELIVERABLE_FILENAME\nhdiutil convert \"$DELIVERABLE_INTERMEDIATE_FILENAME\" -format UDZO -imagekey zlib-level=9 -o \"$DELIVERABLE_FILENAME\"\nrm -f $DELIVERABLE_INTERMEDIATE_FILENAME\n\nhdiutil unflatten \"$DELIVERABLE_FILENAME\"\n\"$SYSTEM_DEVELOPER_TOOLS/Rez\" $SYSTEM_DEVELOPER_DIR/Headers/FlatCarbon/*.r \"$SOURCE_ROOT/LGPL.r\" -a -o \"$DELIVERABLE_FILENAME\"\nhdiutil flatten \"$DELIVERABLE_FILENAME\"\n\n\n\n";
+		};
 		44B7AED10675301E00B51920 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.icns;
@@ -659,7 +681,12 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = $HOME/Applications;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				PRODUCT_NAME = Chmox;
 				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
@@ -681,6 +708,7 @@
 				8D15AC2B0486D014006FF6A4,
 				8D15AC300486D014006FF6A4,
 				8D15AC330486D014006FF6A4,
+				448CC7FD068A319600F9B0DB,
 			);
 			buildRules = (
 			);

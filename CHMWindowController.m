@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 
 #import "WebKit/WebKit.h"
@@ -204,7 +204,7 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
         NSToolbarSeparatorItemIdentifier,
         NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier,
-        NSToolbarPrintItemIdentifier,
+//        NSToolbarPrintItemIdentifier,
         nil
         ];
 }
@@ -216,7 +216,7 @@ static NSString *BIGGER_TEXT_TOOL_ID = @"chmox.biggerText";
 	SMALLER_TEXT_TOOL_ID,
 	BIGGER_TEXT_TOOL_ID,
         NSToolbarFlexibleSpaceItemIdentifier,
-        NSToolbarPrintItemIdentifier,
+//        NSToolbarPrintItemIdentifier,
         nil
         ];
 }

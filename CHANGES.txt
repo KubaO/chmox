@@ -1,4 +1,5 @@
 Version 0.2
+- Distribution as an image disk
 - Added toolbar
 - Added text size customization
 - Fixed memory bug which caused crash when re-opening document
