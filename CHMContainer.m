@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #include <openssl/sha.h>
@@ -212,17 +212,25 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 	for( int entryIndex = 0; entryIndex < entryCount; ++entryIndex ) {
 	    unsigned long entryOffset = 8 + ( entryIndex * entrySize );
 	    
-	    _title = readString( stringsData, readLong( windowsData, entryOffset + 0x14 ) );
-	    NSLog( @"Title: %@", _title );
+	    if( ( _title == nil ) || ( [_title length] == 0 ) ) { 
+		_title = readString( stringsData, readLong( windowsData, entryOffset + 0x14 ) );
+		NSLog( @"Title: %@", _title );
+	    }
 	    
-	    _tocPath = readString( stringsData, readLong( windowsData, entryOffset + 0x60 ) );
-	    NSLog( @"Table of contents: %@", _tocPath );
+	    if( ( _tocPath == nil ) || ( [_tocPath length] == 0 ) ) { 
+		_tocPath = readString( stringsData, readLong( windowsData, entryOffset + 0x60 ) );
+		NSLog( @"Table of contents: %@", _tocPath );
+	    }
 	    
-	    _indexPath = readString( stringsData, readLong( windowsData, entryOffset + 0x64 ) );
-	    NSLog( @"Index: %@", _indexPath );
+	    if( ( _indexPath == nil ) || ( [_indexPath length] == 0 ) ) { 
+		_indexPath = readString( stringsData, readLong( windowsData, entryOffset + 0x64 ) );
+		NSLog( @"Index: %@", _indexPath );
+	    }
 	    
-	    homePath = readString( stringsData, readLong( windowsData, entryOffset + 0x68 ) );
-	    NSLog( @"Home: %@", homePath );
+	    if( ( homePath == nil ) || ( [homePath length] == 0 ) ) { 
+		homePath = readString( stringsData, readLong( windowsData, entryOffset + 0x68 ) );
+		NSLog( @"Home: %@", homePath );
+	    }
 	}
     }
     
@@ -260,6 +268,7 @@ static inline NSString * readString( NSData *data, unsigned long offset ) {
 	    case 3:
 		if( ( _title == nil ) || ( [_title length] == 0 ) ) {
 		    _title = readString( systemData, offset + 4 );
+		    NSLog( @"Title: %@", _title );
 		}
 		break;
 		

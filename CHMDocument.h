@@ -16,13 +16,14 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import <AppKit/AppKit.h>
 
 @class CHMWindowController;
 @class CHMContainer;
+@class CHMTableOfContents;
 @class NSURL;
 
 @interface CHMDocument : NSDocument {
@@ -36,5 +37,5 @@
 
 - (NSString *)title;
 - (NSURL *)currentLocation;
-
+- (CHMTableOfContents *)tableOfContents;
 @end

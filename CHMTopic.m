@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import "CHMTopic.h"
@@ -31,19 +31,40 @@
     if( self = [super init] ) {
         _name = [topicName retain];
         _location = [topicLocation retain];
+	_subTopics = nil;
     }
     
     return self;
+}
+
+- copyWithZone:(NSZone *)zone {
+    CHMTopic *other = [[CHMTopic allocWithZone: zone] initWithName:_name location:_location];
+
+    if( _subTopics ) {
+	other->_subTopics = [_subTopics retain];
+    }
+    
+    return other;
 }
 
 - (void) dealloc
 {
     [_name release];
     [_location release];
+    
+    if( _subTopics ) {
+	[_subTopics release];
+    }
 }
 
 
 #pragma mark Accessors
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<CHMTopic:'%@',%@>", _name, _location];
+}
+
 
 - (NSString *)name
 {
@@ -55,6 +76,16 @@
     return _location;
 }
 
+- (unsigned int)countOfSubTopics
+{
+    return _subTopics? [_subTopics count] : 0;
+}
+
+
+- (CHMTopic *)objectInSubTopicsAtIndex:(unsigned int)index
+{
+    return _subTopics? [_subTopics objectAtIndex:index] : nil;
+}
 
 #pragma mark Mutators
 
@@ -74,7 +105,30 @@
     }
 }
 
+- (void)addObject:(CHMTopic *)topic
+{
+    if( !_subTopics ) {
+	_subTopics = [[NSMutableArray alloc] init];
+    }
+    
+    [_subTopics addObject:topic];
+}
 
+- (void)insertObject:(CHMTopic *)topic inSubTopicsAtIndex:(unsigned int)index
+{
+    if( !_subTopics ) {
+	_subTopics = [[NSMutableArray alloc] init];
+    }
+    
+    [_subTopics insertObject:topic atIndex:index];
+}
+
+- (void)removeObjectFromSubTopicsAtIndex:(unsigned int)index
+{
+    if( _subTopics ) {
+	[_subTopics removeObjectAtIndex:index];
+    }
+}
 
 
 @end

@@ -16,12 +16,13 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import "WebKit/WebKit.h"
 #import "CHMWindowController.h"
 #import "CHMDocument.h"
+#import "CHMTopic.h"
 
 @implementation CHMWindowController
 
@@ -33,10 +34,15 @@
     [[_contentsView mainFrame] loadRequest:request];
 
     [_contentsView setPolicyDelegate:self];
-    [_contentsView setFrameLoadDelegate:self];
+    [_contentsView setFrameLoadDelegate:self];   
 // [_contentsView setUIDelegate:self];
+    
+    [_tocView setDataSource:[[self document] tableOfContents]];
+    [_tocView setDelegate:self];
+
 // [self setupToolbar];
-// [_drawer open];
+
+    [_drawer open];
 }
 
 - (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
@@ -103,11 +109,35 @@
 - (void)webView:(WebView *)sender mouseDidMoveOverElement:(NSDictionary *)elementInformation
   modifierFlags:(unsigned int)modifierFlags
 {
-    NSLog( @"mouseDidMoveOverElement: %@", elementInformation );
+    //NSLog( @"mouseDidMoveOverElement: %@", elementInformation );
+}
+
+#pragma mark NSOutlineView delegate
+
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+    // Change icon
+}
+
+#pragma mark NSOutlineView actions
+
+- (IBAction)displayTopic:(id)sender
+{
+    int selectedRow = [_tocView selectedRow];
+    
+    if( selectedRow >= 0 ) {
+	CHMTopic *topic = [_tocView itemAtRow:selectedRow];
+	NSURL *location = [topic location];
+	
+	if( location ) {
+	    [[_contentsView mainFrame] loadRequest:[NSURLRequest requestWithURL:location]];
+	}
+    }
 }
 
 
 #pragma mark NSToolbar
+
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
 {
     return [NSArray arrayWithObjects:

@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import <Foundation/Foundation.h>
@@ -25,14 +25,21 @@
 @interface CHMTopic : NSObject {
     NSString *_name;
     NSURL *_location;
+    NSMutableArray *_subTopics;
 }
 
 - (id)initWithName:(NSString *)topicName location:(NSURL *)topicLocation;
 
 - (NSString *)name;
 - (NSURL *)location;
+- (unsigned int)countOfSubTopics;
+- (CHMTopic *)objectInSubTopicsAtIndex:(unsigned int)index;
 
 - (void)setName:(NSString *)text;
 - (void)setLocation:(NSURL *)URL;
+
+- (void)addObject:(CHMTopic *)topic;
+- (void)insertObject:(CHMTopic *)topic inSubTopicsAtIndex:(unsigned int)index;
+- (void)removeObjectFromSubTopicsAtIndex:(unsigned int)index;
 
 @end

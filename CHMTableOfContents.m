@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import "CHMTableOfContents.h"
@@ -33,6 +33,8 @@ typedef struct {
     CHMContainer *container;
     CHMTableOfContents *toc;
     NSMutableArray *topicStack;
+    CHMTopic *lastTopic;
+    BOOL mustStartLevel;
     
     // Topic properties
     NSString *name;
@@ -79,16 +81,14 @@ static htmlSAXHandler saxHandler = {
 - (id)initWithContainer:(CHMContainer *)container
 {
     if( self = [super init] ) {
-	rootTopics = [[NSMutableArray alloc] init];
-	branchTopics = [[NSMutableDictionary alloc] init];
+	_rootTopics = [[NSMutableArray alloc] init];
 
 	TOCBuilderContext context = {
 	    container, self, [[NSMutableArray alloc] init],
-	    nil, nil
+	    NO, nil, nil
 	};
 	
 	NSData *tocData = [container dataWithTableOfContents];
-	NSLog( @"TOC: %@", [NSString stringWithCString:[tocData bytes] length:[tocData length]] );
 	
 	// XML_CHAR_ENCODING_NONE / XML_CHAR_ENCODING_UTF8 / XML_CHAR_ENCODING_8859_1
 	htmlParserCtxtPtr parser = htmlCreatePushParserCtxt( &saxHandler, &context,
@@ -103,6 +103,8 @@ static htmlSAXHandler saxHandler = {
 	    xmlFreeDoc( doc );
 	}
 
+	NSLog( @"Root topics: %@", _rootTopics );
+
     }
     
     return self;
@@ -111,8 +113,14 @@ static htmlSAXHandler saxHandler = {
 
 - (void) dealloc
 {
-    [rootTopics release];
-    [branchTopics release];
+    [_rootTopics release];
+}
+
+#pragma mark Mutators
+
+- (void)addRootTopic:(CHMTopic *)topic 
+{
+    [_rootTopics addObject:topic];
 }
 
 #pragma mark libxml SAX handler implementation
@@ -131,8 +139,15 @@ static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, co
 {
     //NSLog( @"SAX:elementDidStart %s", name );
 
-    if( !strcasecmp( "ul", name ) && context->name ) {
-	createNewTopic( context );
+    if( !strcasecmp( "ul", name ) ) {
+	if( context->name ) {
+	    createNewTopic( context );
+	}
+	
+	if( context->lastTopic ) {
+	    [context->topicStack addObject:context->lastTopic];
+	    context->lastTopic = nil;
+	}
     }
     else if( !strcasecmp( "li", name ) ) {
 	// Opening depth level
@@ -163,7 +178,8 @@ static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, co
 		context->path = [[NSString alloc] initWithUTF8String:value];
 	    }
 	    else {
-		NSLog( @"type=%s  value=%s", type, value );
+		// Unsupported topic property
+		//NSLog( @"type=%s  value=%s", type, value );
 	    }
 	}
     }
@@ -177,20 +193,31 @@ static void elementDidEnd( TOCBuilderContext *context, const xmlChar *name )
     }
     else if( !strcasecmp( "ul", name ) ) {
 	// Closing depth level
+	if( [context->topicStack count] > 0 ) {
+	    [context->topicStack removeLastObject];
+	}
     }
 }
 
 static void createNewTopic( TOCBuilderContext *context )
 {
-    NSLog( @"Topic: %@ %@", context->path, context->name );
-
     NSURL *location = nil;
     
     if( context->path ) {
 	location = [NSURL URLWithString:context->path relativeToURL:[context->container baseURL]];
     }
 
-    CHMTopic *topic = [[CHMTopic alloc] initWithName:context->name location:location];
+    context->lastTopic = [[CHMTopic alloc] initWithName:context->name location:location];
+    
+    unsigned int level = [context->topicStack count];
+
+    // Add topic to its parent
+    if( level > 0 ) {
+	[[context->topicStack objectAtIndex:level - 1] addObject:context->lastTopic];
+    }
+    else {
+	[context->toc addRootTopic:context->lastTopic];
+    }  
     
     [context->name release];
     [context->path release];
@@ -204,29 +231,27 @@ static void createNewTopic( TOCBuilderContext *context )
 - (int)outlineView:(NSOutlineView *)outlineView
     numberOfChildrenOfItem:(id)item
 {
-    NSArray *topics = item? [branchTopics objectForKey:item] : rootTopics;
-    return [topics count];
+    return item? [item countOfSubTopics] : [_rootTopics count];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
    isItemExpandable:(id)item
 {
-    return [branchTopics objectForKey:item] != nil;
+    return [item countOfSubTopics] > 0;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView
 	    child:(int)index
 	   ofItem:(id)item
 {
-    NSArray *topics = item? [branchTopics objectForKey:item] : rootTopics;
-    return [topics objectAtIndex:index];
+    return item? [item objectInSubTopicsAtIndex:index] : [_rootTopics objectAtIndex:index];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView
     objectValueForTableColumn:(NSTableColumn *)tableColumn
 	   byItem:(id)item
 {
-    return item;
+    return [item name];
 }
 
 @end

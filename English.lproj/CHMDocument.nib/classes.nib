@@ -2,6 +2,7 @@
     IBClasses = (
         {CLASS = CHMDocument; LANGUAGE = ObjC; SUPERCLASS = NSDocument; }, 
         {
+            ACTIONS = {displayTopic = id; }; 
             CLASS = CHMWindowController; 
             LANGUAGE = ObjC; 
             OUTLETS = {

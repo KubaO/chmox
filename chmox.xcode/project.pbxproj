@@ -512,12 +512,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		44D7FFF1065A9C7B00D2B23E = {
-			fileRef = 44D7FFF0065A9C7B00D2B23E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		44F984BD06576CA60076336E = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -631,6 +625,8 @@
 			buildRules = (
 			);
 			buildSettings = {
+				DEPLOYMENT_LOCATION = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -648,10 +644,12 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = "-I/usr/include/libxml2";
 				OTHER_LDFLAGS = "-lxml2 -lcrypto";
 				PRODUCT_NAME = Chmox;
 				SECTORDER_FLAGS = "";
+				UNSTRIPPED_PRODUCT = NO;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
 			};
@@ -689,7 +687,6 @@
 				448AF67A064AF92800FA37BD,
 				448AF67B064AF92900FA37BD,
 				448AF67C064AF92900FA37BD,
-				44D7FFF1065A9C7B00D2B23E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

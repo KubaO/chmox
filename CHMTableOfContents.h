@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.1.1.1 $
+// $Revision: 1.2 $
 //
 
 #import <Foundation/Foundation.h>
@@ -25,10 +25,10 @@
 @class CHMContainer;
 
 @interface CHMTableOfContents : NSObject {
-    NSMutableArray *rootTopics;
-    NSMutableDictionary *branchTopics;
+    NSMutableArray *_rootTopics;
 }
 
 - (id)initWithContainer:(CHMContainer *)container;
+- (void)addRootTopic:(CHMTopic *)topic;
 
 @end
