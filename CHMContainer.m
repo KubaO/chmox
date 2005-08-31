@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 //
 
 #include <openssl/sha.h>
@@ -58,18 +58,18 @@
 
 - (void) dealloc
 {
-	NSLog(@"deallocating %@",self);
+    NSLog(@"deallocating %@",self);
     [_path release];
 
     if( _handle ) {
         chm_close( _handle );
     }
 
-	[_uniqueId release];
-	[_title release];
-	[_homePath release];
-	[_tocPath release];
-	[_indexPath release];
+    [_uniqueId release];
+    [_title release];
+    [_homePath release];
+    [_tocPath release];
+    [_indexPath release];
 }
 
 
@@ -82,7 +82,7 @@
 
 - (NSString *)title
 {
-    return _title? _title : _path;
+    return _title;
 }
 
 - (NSString *)uniqueId 
@@ -124,6 +124,16 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 }
 
 #pragma mark CHM Object loading
+
+- (bool)hasObjectWithPath: (NSString *)path
+{
+    struct chmUnitInfo info;
+    if( chm_resolve_object( _handle, [path UTF8String], &info ) != CHM_RESOLVE_SUCCESS ) {
+        return NO;
+    }
+
+    return YES;
+}
 
 - (NSData *)dataWithContentsOfObject: (NSString *)path
 {
@@ -234,6 +244,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 	    case 0:
 		if( !_tocPath || ( [_tocPath length] == 0 ) ) {
 		    _tocPath = readString( systemData, offset + 4 );
+                    NSLog( @"SYSTEM Table of contents: %@", _tocPath );
 		}
 		break;
 		
@@ -241,6 +252,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 	    case 1:
 		if( !_indexPath || ( [_indexPath length] == 0 ) ) {
 		    _indexPath = readString( systemData, offset + 4 );
+                    NSLog( @"SYSTEM Index: %@", _indexPath );
 		}
 		break;
 		
@@ -248,6 +260,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 	    case 2:
 		if( !_homePath || ( [_homePath length] == 0 ) ) {
 		    _homePath = readString( systemData, offset + 4 );
+                    NSLog( @"SYSTEM Home: %@", _homePath );
 		}
 		break;
 		
@@ -255,7 +268,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 	    case 3:
 		if( !_title || ( [_title length] == 0 ) ) {
 		    _title = readTrimmedString( systemData, offset + 4 );
-		    NSLog( @"Title: %@", _title );
+		    NSLog( @"SYSTEM Title: %@", _title );
 		}
 		break;
 		
@@ -287,12 +300,49 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
     _uniqueId = [[NSString alloc] initWithFormat:@"%x%x%x%x%x", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4]];
     NSLog( @"UniqueId=%@", _uniqueId );
 
-	[_title retain];
-	[_homePath retain];
-	[_tocPath retain];
-	[_indexPath retain];
+    // Check for empty string titles
+    if( [_title length] == 0 )  {
+        _title = nil;
+    }
+    else {
+        [_title retain];
+    }
+
+    // Check for lack of index page
+    if( !_homePath ) {
+        _homePath = [self findHomeForPath:@"/"];
+        NSLog( @"Implicit home: %@", _homePath );
+    }
+    
+    [_homePath retain];
+    [_tocPath retain];
+    [_indexPath retain];
     
     return YES;
+}
+
+
+- (NSString *)findHomeForPath: (NSString *)basePath
+{
+    NSString *testPath;
+    
+    NSString *separator = [basePath hasSuffix:@"/"]? @"" : @"/";
+    testPath = [NSString stringWithFormat:@"%@%@index.htm", basePath, separator];
+    if( [self hasObjectWithPath:testPath] ) {
+        return testPath;
+    }
+
+    testPath = [NSString stringWithFormat:@"%@%@default.html", basePath, separator];
+    if( [self hasObjectWithPath:testPath] ) {
+        return testPath;
+    }
+
+    testPath = [NSString stringWithFormat:@"%@%@default.htm", basePath, separator];
+    if( [self hasObjectWithPath:testPath] ) {
+        return testPath;
+    }
+
+    return [NSString stringWithFormat:@"%@%@index.html", basePath, separator];
 }
 
 

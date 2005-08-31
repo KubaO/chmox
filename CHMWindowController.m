@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 //
 
 #import "WebKit/WebKit.h"
@@ -76,7 +76,8 @@ static NSString *HISTORY_TOOL_ID = @"chmox.history";
 - (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
 {
     // TODO: user preferences to display filename or doc title
-    return [[self document] title];
+    NSString *windowTitle = [[self document] title];
+    return windowTitle? windowTitle : displayName;
 }
 
 
@@ -383,7 +384,7 @@ static NSString *HISTORY_TOOL_ID = @"chmox.history";
 }
 
 
-#ifdef DEBUG_MODE
+#ifdef DEBUG_MODEX
 
 - (BOOL) respondsToSelector: (SEL) aSelector
 {

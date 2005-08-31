@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 //
 
 #import <Foundation/Foundation.h>
@@ -38,11 +38,13 @@ struct chmFile;
 
 - (id)initWithContentsOfFile:(NSString *)path;
 
+- (bool)hasObjectWithPath: (NSString *)path;
 - (NSData *)dataWithContentsOfObject: (NSString *)objectPath;
 - (NSString *)stringWithContentsOfObject: (NSString *)objectPath;
 - (NSData *)dataWithTableOfContents;
 
 - (BOOL)loadMetadata;
+- (NSString *)findHomeForPath: (NSString *)basePath;
 
 - (NSString *)title;
 - (NSString *)uniqueId;
