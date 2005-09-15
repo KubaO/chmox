@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 //
 
 #import "CHMURLProtocol.h"
@@ -68,22 +68,24 @@ static NSMutableDictionary *_baseURLs = nil;
 + (NSURL *)URLWithPath:(NSString *)path inContainer:(CHMContainer *)container
 {
     NSURL *baseURL = [_baseURLs objectForKey:[container uniqueId]];
-    NSURL *URL = [NSURL URLWithString:path relativeToURL:baseURL];
+    NSURL *url = [NSURL URLWithString:path relativeToURL:baseURL];
     
-    if (baseURL && URL==nil) {
+    if( baseURL && url == nil ) {
 	// Something is wrong, perhaps path is not well-formed. Try percent-
 	// escaping characters. It's not clear what encoding should be used,
 	// but for now let's just use Latin1.
 	CFStringRef str = CFURLCreateStringByAddingPercentEscapes(
-		nil,				// allocator
-		(CFStringRef)path,	// <#CFStringRef originalString#>
-		(CFStringRef)@"%#", // <#CFStringRef charactersToLeaveUnescaped#>
-		nil,				// <#CFStringRef legalURLCharactersToBeEscaped#>,
-		kCFStringEncodingWindowsLatin1 );	//<#CFStringEncoding encoding#>
-        URL = [NSURL URLWithString:(NSString*)str relativeToURL:baseURL];
+            nil,                                // allocator
+            (CFStringRef)path,                  // <#CFStringRef originalString#>
+	    (CFStringRef)@"%#",                 // <#CFStringRef charactersToLeaveUnescaped#>
+	    nil,                                // <#CFStringRef legalURLCharactersToBeEscaped#>,
+	    kCFStringEncodingWindowsLatin1      //<#CFStringEncoding encoding#>
+        );
+        
+        url = [NSURL URLWithString:(NSString*)str relativeToURL:baseURL];
     }
     
-    return URL;
+    return url;
 }
 
 + (BOOL)canHandleURL:(NSURL *)anURL 
@@ -136,7 +138,14 @@ static NSMutableDictionary *_baseURLs = nil;
 	return;
     }
 
-    NSData *data = [container dataWithContentsOfObject:[url path]];
+    NSData *data;
+    
+    if( [url parameterString] ) {
+        data = [container dataWithContentsOfObject:[NSString stringWithFormat:@"%@;%@", [url path], [url parameterString]] ];
+    }
+    else {
+        data = [container dataWithContentsOfObject:[url path]];
+    }
     
     if( !data ) {
 	[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
