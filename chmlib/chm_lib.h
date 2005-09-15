@@ -1,4 +1,4 @@
-/* $Id: chm_lib.h,v 1.1.1.1 2004-05-18 22:31:58 sboisson Exp $ */
+/* $Id: chm_lib.h,v 1.2 2005-09-15 18:17:17 sboisson Exp $ */
 /***************************************************************************
  *             chm_lib.h - CHM archive manipulation routines               *
  *                           -------------------                           *
@@ -69,12 +69,13 @@ typedef long long          LONGINT64;
 struct chmFile;
 
 /* structure representing an element from an ITS file stream   */
-#define CHM_MAX_PATHLEN  (256)
+#define CHM_MAX_PATHLEN  (512)
 struct chmUnitInfo
 {
     LONGUINT64         start;
     LONGUINT64         length;
     int                space;
+    int                flags;
     char               path[CHM_MAX_PATHLEN+1];
 };
 

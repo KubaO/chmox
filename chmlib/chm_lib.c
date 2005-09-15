@@ -1,4 +1,4 @@
-/* $Id: chm_lib.c,v 1.3 2004-10-14 18:27:48 sboisson Exp $ */
+/* $Id: chm_lib.c,v 1.4 2005-09-15 18:17:17 sboisson Exp $ */
 /***************************************************************************
  *             chm_lib.c - CHM archive manipulation routines               *
  *                           -------------------                           *
@@ -168,6 +168,18 @@ typedef long                    Int32;
 typedef unsigned long           UInt32;
 typedef long long               Int64;
 typedef unsigned long long      UInt64;
+
+/* x86-64 */
+/* Note that these may be appropriate for other 64-bit machines. */
+#elif __x86_64__
+typedef unsigned char           UChar;
+typedef short                   Int16;
+typedef unsigned short          UInt16;
+typedef int                     Int32;
+typedef unsigned int            UInt32;
+typedef long                    Int64;
+typedef unsigned long           UInt64;
+
 #else
 
 /* yielding an error is preferable to yielding incorrect behavior */
@@ -183,23 +195,23 @@ typedef unsigned long long      UInt64;
 #elif defined(WIN32)
 static int ffs(unsigned int val)
 {
-        int bit=1, idx=1;
-        while (bit != 0  &&  (val & bit) == 0)
-        {
-                bit <<= 1;
-                ++idx;
-        }
-        if (bit == 0)
-                return 0;
-        else
-                return idx;
+    int bit=1, idx=1;
+    while (bit != 0  &&  (val & bit) == 0)
+    {
+        bit <<= 1;
+        ++idx;
+    }
+    if (bit == 0)
+        return 0;
+    else
+        return idx;
 }
 
 #endif
 
 /* utilities for unmarshalling data */
 static int _unmarshal_char_array(unsigned char **pData,
-                                 unsigned long *pLenRemain,
+                                 unsigned int *pLenRemain,
                                  char *dest,
                                  int count)
 {
@@ -212,7 +224,7 @@ static int _unmarshal_char_array(unsigned char **pData,
 }
 
 static int _unmarshal_uchar_array(unsigned char **pData,
-                                  unsigned long *pLenRemain,
+                                  unsigned int *pLenRemain,
                                   unsigned char *dest,
                                   int count)
 {
@@ -225,7 +237,7 @@ static int _unmarshal_uchar_array(unsigned char **pData,
 }
 
 static int _unmarshal_int16(unsigned char **pData,
-                            unsigned long *pLenRemain,
+                            unsigned int *pLenRemain,
                             Int16 *dest)
 {
     if (2 > *pLenRemain)
@@ -237,7 +249,7 @@ static int _unmarshal_int16(unsigned char **pData,
 }
 
 static int _unmarshal_uint16(unsigned char **pData,
-                             unsigned long *pLenRemain,
+                             unsigned int *pLenRemain,
                              UInt16 *dest)
 {
     if (2 > *pLenRemain)
@@ -249,7 +261,7 @@ static int _unmarshal_uint16(unsigned char **pData,
 }
 
 static int _unmarshal_int32(unsigned char **pData,
-                            unsigned long *pLenRemain,
+                            unsigned int *pLenRemain,
                             Int32 *dest)
 {
     if (4 > *pLenRemain)
@@ -261,7 +273,7 @@ static int _unmarshal_int32(unsigned char **pData,
 }
 
 static int _unmarshal_uint32(unsigned char **pData,
-                             unsigned long *pLenRemain,
+                             unsigned int *pLenRemain,
                              UInt32 *dest)
 {
     if (4 > *pLenRemain)
@@ -273,7 +285,7 @@ static int _unmarshal_uint32(unsigned char **pData,
 }
 
 static int _unmarshal_int64(unsigned char **pData,
-                            unsigned long *pLenRemain,
+                            unsigned int *pLenRemain,
                             Int64 *dest)
 {
     Int64 temp;
@@ -293,7 +305,7 @@ static int _unmarshal_int64(unsigned char **pData,
 }
 
 static int _unmarshal_uint64(unsigned char **pData,
-                             unsigned long *pLenRemain,
+                             unsigned int *pLenRemain,
                              UInt64 *dest)
 {
     UInt64 temp;
@@ -313,7 +325,7 @@ static int _unmarshal_uint64(unsigned char **pData,
 }
 
 static int _unmarshal_uuid(unsigned char **pData,
-                           unsigned long *pDataLen,
+                           unsigned int *pDataLen,
                            unsigned char *dest)
 {
     return _unmarshal_uchar_array(pData, pDataLen, dest, 16);
@@ -356,7 +368,7 @@ struct chmItsfHeader
 }; /* __attribute__ ((aligned (1))); */
 
 static int _unmarshal_itsf_header(unsigned char **pData,
-                                  unsigned long *pDataLen,
+                                  unsigned int *pDataLen,
                                   struct chmItsfHeader *dest)
 {
     /* we only know how to deal with the 0x58 and 0x60 byte structures */
@@ -434,7 +446,7 @@ struct chmItspHeader
 }; /* __attribute__ ((aligned (1))); */
 
 static int _unmarshal_itsp_header(unsigned char **pData,
-                                  unsigned long *pDataLen,
+                                  unsigned int *pDataLen,
                                   struct chmItspHeader *dest)
 {
     /* we only know how to deal with a 0x54 byte structures */
@@ -482,7 +494,7 @@ struct chmPmglHeader
 }; /* __attribute__ ((aligned (1))); */
 
 static int _unmarshal_pmgl_header(unsigned char **pData,
-                                  unsigned long *pDataLen,
+                                  unsigned int *pDataLen,
                                   struct chmPmglHeader *dest)
 {
     /* we only know how to deal with a 0x14 byte structures */
@@ -513,7 +525,7 @@ struct chmPmgiHeader
 }; /* __attribute__ ((aligned (1))); */
 
 static int _unmarshal_pmgi_header(unsigned char **pData,
-                                  unsigned long *pDataLen,
+                                  unsigned int *pDataLen,
                                   struct chmPmgiHeader *dest)
 {
     /* we only know how to deal with a 0x8 byte structures */
@@ -541,11 +553,11 @@ struct chmLzxcResetTable
     UInt32      table_offset;
     UInt64      uncompressed_len;
     UInt64      compressed_len;
-    UInt64      block_len;     
+    UInt64      block_len;
 }; /* __attribute__ ((aligned (1))); */
 
 static int _unmarshal_lzxc_reset_table(unsigned char **pData,
-                                       unsigned long *pDataLen,
+                                       unsigned int *pDataLen,
                                        struct chmLzxcResetTable *dest)
 {
     /* we only know how to deal with a 0x28 byte structures */
@@ -583,7 +595,7 @@ struct chmLzxcControlData
 };
 
 static int _unmarshal_lzxc_control_data(unsigned char **pData,
-                                        unsigned long *pDataLen,
+                                        unsigned int *pDataLen,
                                         struct chmLzxcControlData *dest)
 {
     /* we want at least 0x18 bytes */
@@ -646,11 +658,11 @@ struct chmFile
 #endif
 
     UInt64              dir_offset;
-    UInt64              dir_len;    
+    UInt64              dir_len;
     UInt64              data_offset;
     Int32               index_root;
     Int32               index_head;
-    UInt32              block_len;     
+    UInt32              block_len;
 
     UInt64              span;
     struct chmUnitInfo  rt_unit;
@@ -669,7 +681,7 @@ struct chmFile
 
     /* cache for decompressed blocks */
     UChar             **cache_blocks;
-    Int64              *cache_block_indices;
+    UInt64             *cache_block_indices;
     Int32               cache_num_blocks;
 };
 
@@ -696,8 +708,8 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
         DWORD actualLen=0;
 
         /* awkward Win32 Seek/Tell */
-        offsetLo = (unsigned long)(os & 0xffffffffL);
-        offsetHi = (unsigned long)((os >> 32) & 0xffffffffL);
+        offsetLo = (unsigned int)(os & 0xffffffffL);
+        offsetHi = (unsigned int)((os >> 32) & 0xffffffffL);
         origOffsetLo = SetFilePointer(h->fd, 0, &origOffsetHi, FILE_CURRENT);
         offsetLo = SetFilePointer(h->fd, offsetLo, &offsetHi, FILE_BEGIN);
 
@@ -719,7 +731,7 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
 #ifdef CHM_USE_IO64
     readLen = pread64(h->fd, buf, (long)len, os);
 #else
-    readLen = pread(h->fd, buf, (long)len, (unsigned long)os);
+    readLen = pread(h->fd, buf, (long)len, (unsigned int)os);
 #endif
 #else
 #ifdef CHM_USE_IO64
@@ -748,7 +760,7 @@ struct chmFile *chm_open(const char *filename)
 #endif
 {
     unsigned char               sbuffer[256];
-    unsigned long               sremain;
+    unsigned int                sremain;
     unsigned char              *sbufpos;
     struct chmFile             *newHandle=NULL;
     struct chmItsfHeader        itsfHeader;
@@ -769,12 +781,12 @@ struct chmFile *chm_open(const char *filename)
 #ifdef WIN32
 #ifdef PPC_BSTR
     if ((newHandle->fd=CreateFile(filename,
-				  GENERIC_READ,
+                                  GENERIC_READ,
                                   FILE_SHARE_READ,
-				  NULL,
-				  OPEN_EXISTING,
-				  FILE_ATTRIBUTE_NORMAL,
-				  NULL)) == CHM_NULL_FD)
+                                  NULL,
+                                  OPEN_EXISTING,
+                                  FILE_ATTRIBUTE_NORMAL,
+                                  NULL)) == CHM_NULL_FD)
     {
         free(newHandle);
         return NULL;
@@ -916,7 +928,13 @@ struct chmFile *chm_open(const char *filename)
     /* read control data */
     if (newHandle->compression_enabled)
     {
-        sremain = (unsigned long)uiLzxc.length;
+        sremain = (unsigned int)uiLzxc.length;
+        if (uiLzxc.length > sizeof(sbuffer))
+        {
+            chm_close(newHandle);
+            return NULL;
+        }
+
         sbufpos = sbuffer;
         if (chm_retrieve_object(newHandle, &uiLzxc, sbuffer,
                                 0, sremain) != sremain                       ||
@@ -1149,7 +1167,7 @@ static UChar *_chm_find_in_PMGL(UChar *page_buf,
      *      that is provided for us.
      */
     struct chmPmglHeader header;
-    UInt32 hremain;
+    unsigned int hremain;
     UChar *end;
     UChar *cur;
     UChar *temp;
@@ -1169,6 +1187,8 @@ static UChar *_chm_find_in_PMGL(UChar *page_buf,
         /* grab the name */
         temp = cur;
         strLen = _chm_parse_cword(&cur);
+        if (strLen > CHM_MAX_PATHLEN)
+            return NULL;
         if (! _chm_parse_UTF8(&cur, strLen, buffer))
             return NULL;
 
@@ -1191,7 +1211,7 @@ static Int32 _chm_find_in_PMGI(UChar *page_buf,
      *      that is provided for us
      */
     struct chmPmgiHeader header;
-    UInt32 hremain;
+    unsigned int hremain;
     int page=-1;
     UChar *end;
     UChar *cur;
@@ -1210,6 +1230,8 @@ static Int32 _chm_find_in_PMGI(UChar *page_buf,
     {
         /* grab the name */
         strLen = _chm_parse_cword(&cur);
+        if (strLen > CHM_MAX_PATHLEN)
+            return -1;
         if (! _chm_parse_UTF8(&cur, strLen, buffer))
             return -1;
 
@@ -1258,10 +1280,10 @@ int chm_resolve_object(struct chmFile *h,
         if (_chm_fetch_bytes(h, page_buf,
                              (UInt64)h->dir_offset + (UInt64)curPage*h->block_len,
                              h->block_len) != h->block_len)
-	{
-	    FREEBUF(page_buf);
+        {
+            FREEBUF(page_buf);
             return CHM_RESOLVE_FAILURE;
-	}
+        }
 
         /* now, if it is a leaf node: */
         if (memcmp(page_buf, _chm_pmgl_marker, 4) == 0)
@@ -1310,7 +1332,7 @@ static int _chm_get_cmpblock_bounds(struct chmFile *h,
                              Int64 *len)
 {
     UChar buffer[8], *dummy;
-    UInt32 remain;
+    unsigned int remain;
 
     /* for all but the last block, use the reset table */
     if (block < h->reset_table.block_count-1)
@@ -1616,12 +1638,13 @@ int chm_enumerate(struct chmFile *h,
     struct chmPmglHeader header;
     UChar *end;
     UChar *cur;
-    unsigned long lenRemain;
+    unsigned int lenRemain;
     UInt64 ui_path_len;
 
     /* the current ui */
     struct chmUnitInfo ui;
-    int flag;
+    int type_bits = (what & 0x7);
+    int filter_bits = (what & 0xF8);
 
     /* starting page */
     curPage = h->index_head;
@@ -1653,6 +1676,8 @@ int chm_enumerate(struct chmFile *h,
         /* loop over this page */
         while (cur < end)
         {
+            ui.flags = 0;
+
             if (! _chm_parse_PMGL_entry(&cur, &ui))
             {
                 FREEBUF(page_buf);
@@ -1663,12 +1688,12 @@ int chm_enumerate(struct chmFile *h,
             ui_path_len = strlen(ui.path)-1;
 
             /* check for DIRS */
-            if (ui.path[ui_path_len] == '/'  &&  !(what & CHM_ENUMERATE_DIRS))
-                continue;
+            if (ui.path[ui_path_len] == '/')
+                ui.flags |= CHM_ENUMERATE_DIRS;
 
             /* check for FILES */
-            if (ui.path[ui_path_len] != '/'  &&  !(what & CHM_ENUMERATE_FILES))
-                continue;
+            if (ui.path[ui_path_len] != '/')
+                ui.flags |= CHM_ENUMERATE_FILES;
 
             /* check for NORMAL vs. META */
             if (ui.path[0] == '/')
@@ -1676,13 +1701,17 @@ int chm_enumerate(struct chmFile *h,
 
                 /* check for NORMAL vs. SPECIAL */
                 if (ui.path[1] == '#'  ||  ui.path[1] == '$')
-                    flag = CHM_ENUMERATE_SPECIAL;
+                    ui.flags |= CHM_ENUMERATE_SPECIAL;
                 else
-                    flag = CHM_ENUMERATE_NORMAL;
+                    ui.flags |= CHM_ENUMERATE_NORMAL;
             }
             else
-                flag = CHM_ENUMERATE_META;
-            if (! (what & flag))
+                ui.flags |= CHM_ENUMERATE_META;
+
+            if (! (type_bits & ui.flags))
+                continue;
+
+            if (filter_bits && ! (filter_bits & ui.flags))
                 continue;
 
             /* call the enumerator */
@@ -1738,20 +1767,21 @@ int chm_enumerate_dir(struct chmFile *h,
     struct chmPmglHeader header;
     UChar *end;
     UChar *cur;
-    unsigned long lenRemain;
+    unsigned int lenRemain;
 
     /* set to 1 once we've started */
     int it_has_begun=0;
 
     /* the current ui */
     struct chmUnitInfo ui;
-    int flag;
+    int type_bits = (what & 0x7);
+    int filter_bits = (what & 0xF8);
     UInt64 ui_path_len;
 
     /* the length of the prefix */
     char prefixRectified[CHM_MAX_PATHLEN+1];
     int prefixLen;
-    char lastPath[CHM_MAX_PATHLEN];
+    char lastPath[CHM_MAX_PATHLEN+1];
     int lastPathLen;
 
     /* starting page */
@@ -1759,6 +1789,7 @@ int chm_enumerate_dir(struct chmFile *h,
 
     /* initialize pathname state */
     strncpy(prefixRectified, prefix, CHM_MAX_PATHLEN);
+    prefixRectified[CHM_MAX_PATHLEN] = '\0';
     prefixLen = strlen(prefixRectified);
     if (prefixLen != 0)
     {
@@ -1799,6 +1830,8 @@ int chm_enumerate_dir(struct chmFile *h,
         /* loop over this page */
         while (cur < end)
         {
+            ui.flags = 0;
+
             if (! _chm_parse_PMGL_entry(&cur, &ui))
             {
                 FREEBUF(page_buf);
@@ -1833,19 +1866,20 @@ int chm_enumerate_dir(struct chmFile *h,
                 if (strncasecmp(ui.path, lastPath, lastPathLen) == 0)
                     continue;
             }
-            strcpy(lastPath, ui.path);
+            strncpy(lastPath, ui.path, CHM_MAX_PATHLEN);
+            lastPath[CHM_MAX_PATHLEN] = '\0';
             lastPathLen = strlen(lastPath);
 
             /* get the length of the path */
             ui_path_len = strlen(ui.path)-1;
 
             /* check for DIRS */
-            if (ui.path[ui_path_len] == '/'  &&  !(what & CHM_ENUMERATE_DIRS))
-                continue;
+            if (ui.path[ui_path_len] == '/')
+                ui.flags |= CHM_ENUMERATE_DIRS;
 
             /* check for FILES */
-            if (ui.path[ui_path_len] != '/'  &&  !(what & CHM_ENUMERATE_FILES))
-                continue;
+            if (ui.path[ui_path_len] != '/')
+                ui.flags |= CHM_ENUMERATE_FILES;
 
             /* check for NORMAL vs. META */
             if (ui.path[0] == '/')
@@ -1853,13 +1887,17 @@ int chm_enumerate_dir(struct chmFile *h,
 
                 /* check for NORMAL vs. SPECIAL */
                 if (ui.path[1] == '#'  ||  ui.path[1] == '$')
-                    flag = CHM_ENUMERATE_SPECIAL;
+                    ui.flags |= CHM_ENUMERATE_SPECIAL;
                 else
-                    flag = CHM_ENUMERATE_NORMAL;
+                    ui.flags |= CHM_ENUMERATE_NORMAL;
             }
             else
-                flag = CHM_ENUMERATE_META;
-            if (! (what & flag))
+                ui.flags |= CHM_ENUMERATE_META;
+
+            if (! (type_bits & ui.flags))
+                continue;
+
+            if (filter_bits && ! (filter_bits & ui.flags))
                 continue;
 
             /* call the enumerator */

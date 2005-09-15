@@ -1,4 +1,4 @@
-/* $Id: lzx.c,v 1.1.1.1 2004-05-18 22:31:59 sboisson Exp $ */
+/* $Id: lzx.c,v 1.2 2005-09-15 18:17:17 sboisson Exp $ */
 /***************************************************************************
  *                        lzx.c - LZX decompression routines               *
  *                           -------------------                           *
@@ -238,7 +238,7 @@ int LZXreset(struct LZXstate *pState)
     for (i = 0; i < LZX_LENGTH_MAXSYMBOLS + LZX_LENTABLE_SAFETY; i++)   pState->LENGTH_len[i]   = 0;
 
     return DECR_OK;
-};
+}
 
 
 /* Bitstream reading macros:
@@ -615,6 +615,7 @@ int LZXdecompress(struct LZXstate *pState, unsigned char *inpos, unsigned char *
                             rundest = window + window_posn;
                             runsrc  = rundest - match_offset;
                             window_posn += match_length;
+                            if (window_posn > window_size) return DECR_ILLEGALDATA;
                             this_run -= match_length;
 
                             /* copy any wrapped around source data */
@@ -695,6 +696,7 @@ int LZXdecompress(struct LZXstate *pState, unsigned char *inpos, unsigned char *
                             rundest = window + window_posn;
                             runsrc  = rundest - match_offset;
                             window_posn += match_length;
+                            if (window_posn > window_size) return DECR_ILLEGALDATA;
                             this_run -= match_length;
 
                             /* copy any wrapped around source data */
