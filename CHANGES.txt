@@ -1,5 +1,8 @@
 Version 0.4
 - Italian translation by Fabrizio
+- Fixes by David Steinbrunner
+- Fixed printing (thanks to Claudio Bantaloukas)
+- Improved TOC parsing
 
 Version 0.3
 - French translation

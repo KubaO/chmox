@@ -18,6 +18,7 @@ ENHANCEMENTS
 - Document icon
 
 BUGS FIXES
+- Autorelease for containerWithContentsOfFile
 - Update TOC's tool tip rectangles when drawer is resized
 - Handle content not displayable by WebView (like download)
 
