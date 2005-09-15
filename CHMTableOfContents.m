@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 //
 
 #import "CHMTableOfContents.h"
@@ -34,8 +34,8 @@ typedef struct {
     CHMContainer *container;
     CHMTableOfContents *toc;
     NSMutableArray *topicStack;
+    CHMTopic *placeholder; 
     CHMTopic *lastTopic;
-    BOOL mustStartLevel;
     
     // Topic properties
     NSString *name;
@@ -86,7 +86,8 @@ static htmlSAXHandler saxHandler = {
 
 	TOCBuilderContext context = {
 	    container, self, [[NSMutableArray alloc] init],
-	    NO, nil, nil
+            [[CHMTopic alloc] init],
+	    nil, nil, nil
 	};
 	
 	NSData *tocData = [container dataWithTableOfContents];
@@ -129,19 +130,21 @@ static htmlSAXHandler saxHandler = {
 
 static void documentDidStart( TOCBuilderContext *context )
 {
-    NSLog( @"SAX:documentDidStart" );
+    DEBUG_OUTPUT( @"SAX:documentDidStart" );
 }
 
 static void documentDidEnd( TOCBuilderContext *context )
 {
-    NSLog( @"SAX:documentDidEnd" );
+    DEBUG_OUTPUT( @"SAX:documentDidEnd" );
 }
 
 static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, const xmlChar **atts )
 {
-    //NSLog( @"SAX:elementDidStart %s", name );
+//    DEBUG_OUTPUT( @"SAX:elementDidStart %s", name );
 
     if( !strcasecmp( "ul", name ) ) {
+//        DEBUG_OUTPUT( @"Stack BEFORE %@", context->topicStack );
+
 	if( context->name ) {
 	    createNewTopic( context );
 	}
@@ -150,6 +153,11 @@ static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, co
 	    [context->topicStack addObject:context->lastTopic];
 	    context->lastTopic = nil;
 	}
+        else {
+	    [context->topicStack addObject:context->placeholder];
+        }
+        
+//        DEBUG_OUTPUT( @"Stack AFTER %@", context->topicStack );
     }
     else if( !strcasecmp( "li", name ) ) {
 	// Opening depth level
@@ -189,15 +197,29 @@ static void elementDidStart( TOCBuilderContext *context, const xmlChar *name, co
 
 static void elementDidEnd( TOCBuilderContext *context, const xmlChar *name )
 {
+//    DEBUG_OUTPUT( @"SAX:elementDidEnd %s", name );
+    
     if( !strcasecmp( "li", name ) && context->name ) {
 	// New complete topic
 	createNewTopic( context );
     }
     else if( !strcasecmp( "ul", name ) ) {
+//        DEBUG_OUTPUT( @"Stack BEFORE %@", context->topicStack );
+
 	// Closing depth level
 	if( [context->topicStack count] > 0 ) {
+            context->lastTopic = [context->topicStack objectAtIndex:[context->topicStack count] - 1];
 	    [context->topicStack removeLastObject];
+
+            if( context->lastTopic == context->placeholder ) {
+                context->lastTopic = nil;
+            }
 	}
+        else {
+            context->lastTopic = nil;
+        }
+        
+//        DEBUG_OUTPUT( @"Stack AFTER %@", context->topicStack );
     }
 }
 
@@ -210,21 +232,26 @@ static void createNewTopic( TOCBuilderContext *context )
     }
 
     context->lastTopic = [[CHMTopic alloc] initWithName:context->name location:location];
-    
-    unsigned int level = [context->topicStack count];
-
-    // Add topic to its parent
-    if( level > 0 ) {
-	[[context->topicStack objectAtIndex:level - 1] addObject:context->lastTopic];
-    }
-    else {
-	[context->toc addRootTopic:context->lastTopic];
-    }  
-    
     [context->name release];
     [context->path release];
     context->name = nil;
     context->path = nil;
+    
+    int level = [context->topicStack count];
+    
+    // Add topic to its parent
+    while( --level >= 0 ) {
+        CHMTopic *parent = [context->topicStack objectAtIndex:level];
+
+        if( parent != context->placeholder ) {
+            DEBUG_OUTPUT( @"createNewTopic: %@, %d", context->lastTopic, level );
+            [parent addObject:context->lastTopic];
+            return;
+        }
+    }
+    
+    [context->toc addRootTopic:context->lastTopic];
+    DEBUG_OUTPUT( @"createNewTopic: %@ -root-", context->lastTopic );
 }
 
 
