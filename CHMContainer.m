@@ -16,7 +16,7 @@
 // along with Foobar; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 //
 
 #include <openssl/sha.h>
@@ -125,7 +125,7 @@ static inline NSString * readTrimmedString( NSData *data, unsigned long offset )
 
 #pragma mark CHM Object loading
 
-- (bool)hasObjectWithPath: (NSString *)path
+- (BOOL)hasObjectWithPath: (NSString *)path
 {
     struct chmUnitInfo info;
     if( chm_resolve_object( _handle, [path UTF8String], &info ) != CHM_RESOLVE_SUCCESS ) {
